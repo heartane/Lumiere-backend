@@ -3,9 +3,8 @@
 /* eslint-disable no-underscore-dangle */
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
-import User from '../models/user.js';
-import generateAccessToken from '../utils/generateToken.js';
-import localTime from '../utils/localTime.js';
+import * as UserRepository from '../repositories/UserRepository.js';
+import serializeSingleUserInfo from '../serializers/UserSerializer.js';
 import {
   getAccessToken,
   getOption,
@@ -20,30 +19,29 @@ import {
 const checkEmail = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
-  const emailExists = await User.findOne({ 'general.email': email });
-
-  if (emailExists) {
+  if (await UserRepository.findByEmail(email)) {
     res.status(401).json({ message: '이미 해당 이메일이 존재합니다' });
   } else {
     res.status(200).send({ message: '사용 가능한 이메일입니다' });
   }
 });
 
-// @desc   Register a new user
+// @desc   Register a new general user
 // @route  POST /api/users
 // @access Public
 const register = asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
 
   if (email && password && name) {
-    const user = new User({
-      general: { email, password },
-      name,
-    });
-    user.markModified('general');
-    await user.save();
+    const user = await UserRepository.createUser(
+      {
+        general: { email, password },
+        name,
+      },
+      'general',
+    );
 
-    res.status(201).json({ message: '회원가입 성공' });
+    res.status(201).json({ message: `회원가입 완료, ${user._id}` });
   } else {
     res.status(400).json({ message: '모든 항목은 필수입니다' });
   }
@@ -54,7 +52,7 @@ const register = asyncHandler(async (req, res) => {
 // @access Public
 const generalLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ 'general.email': email });
+  const user = await UserRepository.findByEmail(email);
 
   if (!user) {
     res.status(401).json({ message: '이메일을 다시 확인해주세요' });
@@ -67,32 +65,19 @@ const generalLogin = asyncHandler(async (req, res) => {
   }
 
   if (await user.matchPassword(password)) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      isAdmin: user.isAdmin,
-      token: generateAccessToken(user._id, user.isAdmin),
-    });
+    res.json(serializeSingleUserInfo(user));
   } else {
     res.status(401).json({ message: '비밀번호를 다시 확인해주세요' });
   }
 });
 
-// @desc   User logout
+// @desc   Log user logout time
 // @route  GET /api/users/logout
 // @access Private
 const logout = asyncHandler(async (req, res) => {
-  // 로그아웃 시간 저장 -> 추후 휴먼 계정 전환 가능
+  const time = await UserRepository.logLastAccessTime(req.user.id);
 
-  await User.updateOne(
-    { _id: req.user.id },
-    { 'active.lastAccessTime': localTime() },
-    {
-      upsert: true,
-    },
-  );
-
-  res.status(200).json({ message: `로그아웃 시간이 저장되었습니다` });
+  res.status(200).json({ message: `로그아웃 시간, ${time}` });
 });
 
 // @desc   Fetch token & userInfo from corporations
@@ -127,42 +112,27 @@ const oAuthLogin = asyncHandler(async (req, res) => {
   }
   // DB와 연락하기
   const { access_token, refresh_token } = token;
-  const user = await User.findOneAndUpdate(
-    {
-      [`${corp}.uuid`]: uuid,
-    },
-    {
-      [`${corp}.email`]: email,
-      [`${corp}.accessToken`]: access_token,
-      [`${corp}.refreshToken`]: refresh_token,
-      'active.isClosed': false,
-    },
-    { new: true },
-  );
+  const user = await UserRepository.findSocialUser({
+    uuid,
+    email,
+    access_token,
+    refresh_token,
+  });
 
   if (user) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      isAdmin: user.isAdmin,
-      token: generateAccessToken(user._id, user.isAdmin),
-    });
+    res.json(serializeSingleUserInfo(user));
   } else {
-    const newUser = new User({
-      [`${corp}.uuid`]: uuid,
-      [`${corp}.email`]: email,
-      [`${corp}.accessToken`]: access_token,
-      [`${corp}.refreshToken`]: refresh_token,
-      name,
-    });
-
-    await newUser.save();
-    res.json({
-      _id: newUser._id,
-      name: newUser.name,
-      isAdmin: newUser.isAdmin,
-      token: generateAccessToken(newUser._id, newUser.isAdmin),
-    });
+    const newUser = await UserRepository.createUser(
+      {
+        [`${corp}.uuid`]: uuid,
+        [`${corp}.email`]: email,
+        [`${corp}.accessToken`]: access_token,
+        [`${corp}.refreshToken`]: refresh_token,
+        name,
+      },
+      'social',
+    );
+    res.json(serializeSingleUserInfo(newUser));
   }
 });
 
@@ -171,9 +141,8 @@ const oAuthLogin = asyncHandler(async (req, res) => {
 // @access Private
 const checkPwd = asyncHandler(async (req, res) => {
   const { password } = req.body;
+  const user = await UserRepository.findById(req.user.id);
 
-  const user = await User.findById(req.user.id);
-  // 일반, 소설 유저 구분
   if (!user.general) {
     res.status(401).json({ message: '소셜 유저는 변경이 불가합니다' });
   } else if (await user.matchPassword(password)) {
@@ -193,16 +162,13 @@ const updatePwd = asyncHandler(async (req, res) => {
   if (password) {
     password = await bcrypt.hash(password, 10);
 
-    const updatedUser = await User.findByIdAndUpdate(
+    const updatedUser = await UserRepository.updatePassword(
       req.user.id,
-      { 'general.password': password },
-      {
-        new: true,
-      },
+      password,
     );
     res.status(200).json({
       message: '비밀번호가 성공적으로 변경되었습니다',
-      token: generateAccessToken(updatedUser._id, updatedUser.isAdmin),
+      token: serializeSingleUserInfo(updatedUser).token,
     });
   } else {
     res.status(400).json({
@@ -220,50 +186,29 @@ const dropout = asyncHandler(async (req, res) => {
   if (req.user.isAdmin === true) {
     const { userId } = req.query;
     if (!userId) {
-      res.status(400).json({
+      return res.status(400).json({
         message: '탈퇴시킬 회원을 기입해주세요',
       });
-      return;
     }
-    const user = await User.findById(userId);
-    if (user.general.email) {
-      await User.updateOne(
-        { _id: userId },
-        {
-          'active.lastAccessTime': localTime(),
-          'active.isClosed': true,
-          $unset: { 'general.password': 1 },
-        },
-        { new: true, upsert: true },
-      );
-      res.status(200).json({
+    const user = await UserRepository.findById(userId);
+    if (user.general) {
+      await UserRepository.blockOff(user._id, 'general');
+      return res.status(200).json({
         message: `해당 유저를 정상적으로 탈퇴시켰습니다`,
       });
-      return;
     }
-    res.status(400).json({
+    return res.status(400).json({
       message: `소셜 로그인 유저입니다`,
     });
-    return;
   }
 
   if (req.user.isAdmin === false) {
-    const user = await User.findById(req.user.id);
-    if (user.general.email) {
-      await User.updateOne(
-        { _id: req.user.id },
-        {
-          'active.lastAccessTime': localTime(),
-          'active.isClosed': true,
-          $unset: { 'general.password': 1 },
-        },
-        {
-          upsert: true,
-        },
-      );
-      res.status(200).json({ message: '루미에르를 탈퇴하셨습니다' });
-      return;
+    const user = await UserRepository.findById(req.user.id);
+    if (user.general) {
+      await UserRepository.blockOff(user._id, 'general');
+      return res.status(200).json({ message: '루미에르를 탈퇴하셨습니다' });
     }
+
     const { google, naver, kakao } = user;
     const corp = google.uuid
       ? 'google'
@@ -290,49 +235,21 @@ const dropout = asyncHandler(async (req, res) => {
     if (revokeRes.status === 200 && corp === 'google') {
       message = '구글 계정과 연결 끊기 완료';
     }
-    await User.updateOne(
-      { _id: req.user.id },
-      {
-        'active.lastAccessTime': localTime(),
-        'active.isClosed': true,
-        $unset: {
-          [`${corp}.accessToken`]: 1,
-          [`${corp}.refreshToken`]: 1,
-        },
-      },
-      { upsert: true },
-    );
+    await UserRepository.blockOff(req.user.id, 'social');
     res.status(200).json(message);
   }
 });
 
-// @desc   Get all users
+// @desc   Get all users except admin
 // @route  GET /api/users
 // @access Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-  // Admin 관리자 유저만 이 정보에 대한 권한이 있다.
-
   const pageSize = 10;
   const page = Number(req.query.pageNumber) || 1;
-  const count = await User.countDocuments({ isAdmin: false });
-
-  const users = await User.find(
-    { isAdmin: false },
-    {
-      isAdmin: 0,
-      'general.password': 0,
-      'google.accessToken': 0,
-      'naver.accessToken': 0,
-      'kakao.accessToken': 0,
-      'google.refreshToken': 0,
-      'naver.refreshToken': 0,
-      'kakao.refreshToken': 0,
-    },
-  )
-    .limit(pageSize)
-    .skip(pageSize * (page - 1))
-    .exec();
-
+  const count = await UserRepository.countDocs({ isAdmin: false });
+  const users = await UserRepository.findUsers(pageSize, page, {
+    isAdmin: false,
+  });
   res.json({ users, page, pages: Math.ceil(count / pageSize) });
 });
 

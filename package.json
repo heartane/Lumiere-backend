@@ -1,15 +1,12 @@
 {
-  "name": "lumiere",
+  "name": "lumiere-backend-refactoring",
   "version": "1.0.0",
   "description": "MERN E-Commerce app, The final project of minimanimo.",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server/index",
-    "server": "nodemon server/index",
-    "client": "npm start --prefix client",
-    "predev": "kill -9 $(lsof -i :5000 | grep -i -E -o '\\s[0-9]+\\s') || true",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "start": "node index.js",
+    "server": "nodemon"
   },
   "repository": {
     "type": "git",

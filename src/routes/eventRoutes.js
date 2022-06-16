@@ -5,7 +5,7 @@ import {
   updateEvent,
   deleteEvent,
 } from '../controllers/eventController.js';
-import { protect, admin } from '../middleware/auth.js';
+import { protect, admin } from '../middlewares/auth.js';
 
 const router = express.Router();
 

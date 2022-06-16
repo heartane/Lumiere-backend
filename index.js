@@ -3,16 +3,16 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import colors from 'colors';
 import cors from 'cors';
-import connectDB from './config/db.js';
+import connectDB from './src/config/db.js';
 import {
   userRoutes,
   artistRoutes,
   productRoutes,
   orderRoutes,
   eventRoutes,
-} from './routes/index.js';
-import { errHandler, notFound } from './middleware/error.js';
-import logger from './config/logger.js';
+} from './src/routes/index.js';
+import { errHandler, notFound } from './src//middlewares/error.js';
+import logger from './src/config/logger.js';
 
 dotenv.config();
 connectDB();

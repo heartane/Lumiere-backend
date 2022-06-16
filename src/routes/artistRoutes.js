@@ -8,7 +8,7 @@ import {
   zzimArtist,
   getZzimArtists,
 } from '../controllers/artistController.js';
-import { protect, admin } from '../middleware/auth.js';
+import { protect, admin } from '../middlewares/auth.js';
 
 const router = express.Router();
 
