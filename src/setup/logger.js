@@ -1,6 +1,7 @@
 import { createLogger, format, transports } from 'winston';
-import WinstonDaily from 'winston-daily-rotate-file'; // 로그파일 일자별 생성
+import WinstonDaily from 'winston-daily-rotate-file';
 import appRoot from 'app-root-path'; // app root 경로를 가져오는 라이브러리
+import config from './config/env.js';
 
 const logDir = `${appRoot}/logs`;
 const { combine, timestamp, colorize, printf } = format;
@@ -13,7 +14,7 @@ const logFormat = printf(({ level, message, timestamp }) => {
  * Log Level
  * error: 0, warn: 1, info: 2, http: 3, verbose: 4, debug: 5, silly: 6
  */
-const logger = createLogger({
+const Logger = createLogger({
   format: combine(
     format.json(),
     timestamp({
@@ -53,22 +54,25 @@ const logger = createLogger({
   ],
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
+if (config.server.env !== 'production') {
+  Logger.add(
     new transports.Console({
       level: 'silly',
       format: combine(
-        colorize({ all: true }), // console 에 출력할 로그 컬러 설정 적용함
-        logFormat, // log format 적용
+        colorize({
+          colors: { info: 'blue', error: 'red', http: 'yellow' },
+          all: true,
+        }),
+        logFormat,
       ),
     }),
   );
 }
 
-logger.stream = {
+Logger.stream = {
   write: (message) => {
-    logger.http(message);
+    Logger.http(message);
   },
 };
 
-export default logger;
+export default Logger;
