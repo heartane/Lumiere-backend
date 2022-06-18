@@ -1,19 +1,15 @@
 ---
-name: "[Task 이슈카드 마크다운 템플릿]"
+name: '[Task 이슈카드 마크다운 템플릿]'
 about: Task 이슈카드 템플릿 입니다.
-title: "[Task][Client or Server][Bare/Advanced/NightMare]-  작업내용 "
-labels: Client, E-1h, E-1.5h, E-2h, E-2.5h, E-3h, High, Low, Middle, Server
+title: '[Task][목적] - 작업내용(대상을 행위한다) '
+labels: High, Low, Middle
 assignees: ''
-
 ---
 
-> ### ISSUE
-> * Group:  `client`, `server`, `sr`
-> * Type: `bug`, `feature`, `delete` , `plan`
-> * Detail: fix actions from client redux
-> 
-> ### TODO
-> 1. [ ]  Job1
-> 2. [ ]  Job2
-> 3. [ ]  Job3
->
+## ISSUE Overview
+
+**Intended Outcome**
+
+## Task list
+
+## References
