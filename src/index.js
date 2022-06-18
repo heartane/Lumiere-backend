@@ -4,13 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 
 import connectDB from './setup/db.js';
-import {
-  userRoutes,
-  artistRoutes,
-  productRoutes,
-  orderRoutes,
-  eventRoutes,
-} from './routes/index.js';
+import apiRoutes from './routes/index.js';
 import { errHandler, notFound } from './middlewares/error.js';
 import Logger from './setup/logger.js';
 import config from './setup/config/env.js';
@@ -35,11 +29,7 @@ app.get('/', (req, res) => {
   res.send('Lumiere API is running...');
 });
 
-app.use('/api/users', userRoutes);
-app.use('/api/artists', artistRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/events', eventRoutes);
+app.use(`${config.apiRoot}`, apiRoutes);
 
 app.use(notFound);
 app.use(errHandler);
