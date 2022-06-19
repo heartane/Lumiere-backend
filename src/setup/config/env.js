@@ -34,6 +34,7 @@ export default {
     redirectUri: required('REDIRECT_URI'),
     kakao: {
       clientId: required('KAKAO_CLIENT_ID'),
+      clientSecret: required('KAKAO_CLIENT_SECRET'),
     },
     google: {
       clientId: required('GOOGLE_CLIENT_ID'),

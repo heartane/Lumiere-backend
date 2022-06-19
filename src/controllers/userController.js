@@ -194,24 +194,12 @@ const dropout = asyncHandler(async (req, res) => {
       : null;
 
     const organ = makeClass(corp, `${user[corp].refreshToken}`);
+    const unlink = await organ.revokeAccess();
 
-    // 엑세스 끊기
-    const message = await organ.revokeAccess();
-    if (message) {
+    if (unlink) {
       await UserRepository.blockOff(req.user.id, 'social', corp);
-      res.status(200).json(message);
+      res.status(200).json(unlink);
     }
-    // let message;
-
-    // if (revokeRes.data.id && corp === 'kakao') {
-    //   message = '카카오 계정과 연결 끊기 완료';
-    // }
-    // if (revokeRes.data.result === 'success' && corp === 'naver') {
-    //   message = '네이버 계정과 연결 끊기 완료';
-    // }
-    // if (revokeRes.status === 200 && corp === 'google') {
-    //   message = '구글 계정과 연결 끊기 완료';
-    // }
   }
 });
 
