@@ -30,4 +30,19 @@ export default {
     secretKey: required('JWT_SECRET_KEY'),
     expireTime: required('JWT_EXPIRATION_TIME'),
   },
+  oauth: {
+    redirectUri: required('REDIRECT_URI'),
+    kakao: {
+      clientId: required('KAKAO_CLIENT_ID'),
+    },
+    google: {
+      clientId: required('GOOGLE_CLIENT_ID'),
+      clientSecret: required('GOOGLE_CLIENT_SECRET'),
+    },
+    naver: {
+      clientId: required('NAVER_CLIENT_ID'),
+      clientSecret: required('NAVER_CLIENT_SECRET'),
+      state: required('NAVER_STATE'),
+    },
+  },
 };
