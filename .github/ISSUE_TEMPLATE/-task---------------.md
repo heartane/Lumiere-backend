@@ -8,7 +8,7 @@ assignees: ''
 
 ## ISSUE Overview
 
-**Intended Outcome**
+### Intended Outcome
 
 ## Task list
 
