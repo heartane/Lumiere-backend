@@ -5,13 +5,7 @@ import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
 import * as UserRepository from '../repositories/UserRepository.js';
 import serializeSingleUserInfo from '../serializers/UserSerializer.js';
-import {
-  getAccessToken,
-  getOption,
-  getUserInfo,
-  revokeAccess,
-  updateAccessToken,
-} from '../utils/oAuth.js';
+import makeClass from '../helpers/oAuth.js';
 
 // @desc   Check a email address
 // @route  POST /api/users/email
@@ -87,32 +81,13 @@ const oAuthLogin = asyncHandler(async (req, res) => {
   const { corp } = req.params;
   const { code } = req.query;
 
-  const options = getOption(corp, code);
-  const token = await getAccessToken(options, 'authorization_code');
-  const userInfo = await getUserInfo(corp, options.userInfo_url, token);
+  const organ = makeClass(corp, code);
+  const token = await organ.getAccessToken();
 
-  let uuid;
-  let email;
-  let name;
-
-  if (corp === 'google') {
-    uuid = userInfo.sub;
-    email = userInfo.email;
-    name = userInfo.name;
-  }
-  if (corp === 'kakao') {
-    uuid = userInfo.id;
-    email = userInfo.kakao_account.email;
-    name = userInfo.kakao_account.profile.nickname;
-  }
-  if (corp === 'naver') {
-    uuid = userInfo.response.id;
-    email = userInfo.response.email;
-    name = userInfo.response.name;
-  }
-  // DB와 연락하기
   const { access_token, refresh_token } = token;
-  const user = await UserRepository.findSocialUser({
+  const { uuid, email, name } = await organ.setUserInfo(token);
+
+  const user = await UserRepository.findSocialUser(corp, {
     uuid,
     email,
     access_token,
@@ -204,7 +179,7 @@ const dropout = asyncHandler(async (req, res) => {
 
   if (req.user.isAdmin === false) {
     const user = await UserRepository.findById(req.user.id);
-    if (user.general) {
+    if (user.general.email) {
       await UserRepository.blockOff(user._id, 'general');
       return res.status(200).json({ message: '루미에르를 탈퇴하셨습니다' });
     }
@@ -218,25 +193,13 @@ const dropout = asyncHandler(async (req, res) => {
       ? 'kakao'
       : null;
 
-    const options = getOption(corp, `${user[corp].refreshToken}`);
-    const token = await updateAccessToken(options, 'refresh_token');
-    const { access_token } = token;
+    const organ = makeClass(corp, `${user[corp].refreshToken}`);
+    const unlink = await organ.revokeAccess();
 
-    // 엑세스 끊기
-    const revokeRes = await revokeAccess(corp, access_token);
-    let message;
-
-    if (revokeRes.data.id && corp === 'kakao') {
-      message = '카카오 계정과 연결 끊기 완료';
+    if (unlink) {
+      await UserRepository.blockOff(req.user.id, 'social', corp);
+      res.status(200).json(unlink);
     }
-    if (revokeRes.data.result === 'success' && corp === 'naver') {
-      message = '네이버 계정과 연결 끊기 완료';
-    }
-    if (revokeRes.status === 200 && corp === 'google') {
-      message = '구글 계정과 연결 끊기 완료';
-    }
-    await UserRepository.blockOff(req.user.id, 'social');
-    res.status(200).json(message);
   }
 });
 
