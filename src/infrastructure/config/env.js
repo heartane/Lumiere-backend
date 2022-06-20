@@ -21,7 +21,10 @@ export default {
     env: required('NODE_ENV'),
   },
   apiRoot: required('API_ROOT'),
-  database: { url: required('MONGODB_URI') },
+  database: {
+    adaptor: required('DB_ADAPTOR'),
+    url: required('MONGODB_URI'),
+  },
   cors: { origin: required('CORS_ORIGIN') },
   bcrypt: {
     saltRounds: parseInt(required('SALT_ROUNDS', 10)),
