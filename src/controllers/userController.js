@@ -3,9 +3,12 @@
 /* eslint-disable no-underscore-dangle */
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcrypt';
-import * as UserRepository from '../repositories/UserRepository.js';
+import userService from '../application/userService.js';
+import * as UserRepository from '../infrastructure/repositories/UserRepositoryMongo.js';
 import serializeSingleUserInfo from '../serializers/UserSerializer.js';
 import makeClass from '../helpers/oAuth.js';
+
+// ⚠️ notice! userService 구현해서 추후 레포지토리 import 지우기
 
 // @desc   Check a email address
 // @route  POST /api/users/email
@@ -13,7 +16,7 @@ import makeClass from '../helpers/oAuth.js';
 const checkEmail = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
-  if (await UserRepository.findByEmail(email)) {
+  if (await userService.findByEmail(email)) {
     res.status(401).json({ message: '이미 해당 이메일이 존재합니다' });
   } else {
     res.status(200).send({ message: '사용 가능한 이메일입니다' });
@@ -46,7 +49,7 @@ const register = asyncHandler(async (req, res) => {
 // @access Public
 const generalLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await UserRepository.findByEmail(email);
+  const user = await userService.findByEmail(email);
 
   if (!user) {
     res.status(401).json({ message: '이메일을 다시 확인해주세요' });
@@ -116,7 +119,7 @@ const oAuthLogin = asyncHandler(async (req, res) => {
 // @access Private
 const checkPwd = asyncHandler(async (req, res) => {
   const { password } = req.body;
-  const user = await UserRepository.findById(req.user.id);
+  const user = await userService.findById(req.user.id);
 
   if (!user.general) {
     res.status(401).json({ message: '소셜 유저는 변경이 불가합니다' });
