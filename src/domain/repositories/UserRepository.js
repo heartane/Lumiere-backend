@@ -7,7 +7,7 @@ export default class UserRepository {
     throw new Error('ERR_METHOD_NOT_IMPLEMENTED');
   }
 
-  save(userEntity) {
+  create(userEntity) {
     throw new Error('ERR_METHOD_NOT_IMPLEMENTED');
   }
 }

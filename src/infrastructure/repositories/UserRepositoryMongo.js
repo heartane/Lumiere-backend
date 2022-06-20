@@ -1,4 +1,4 @@
-import User from '../../models/user.js';
+import User from '../database/mongo/models/user.js';
 import localTime from '../../utils/localTime.js';
 import UserRepository from '../../domain/repositories/UserRepository.js';
 
@@ -13,102 +13,109 @@ export class UserRepositoryMongo extends UserRepository {
   async findById(userId) {
     return await User.findById(userId);
   }
-}
 
-export async function findById(userId) {
-  return await User.findById(userId);
-}
+  async create(userInfo) {
+    let user;
 
-export async function createUser(userInfo, type) {
-  const user = new User({ ...userInfo });
+    if (userInfo.corp) {
+      user = new User({
+        [`${corp}.uuid`]: userInfo.uuid,
+        [`${corp}.email`]: userInfo.email,
+        [`${corp}.refreshToken`]: userInfo.refresh_token,
+        name: userInfo.name,
+      });
+    } else {
+      user = new User({
+        general: { email: userInfo.email, password: userInfo.password },
+        name: userInfo.name,
+      });
+      user.markModified('general');
+    }
+    await user.save();
 
-  if (type === 'general') {
-    user.markModified('general');
-  }
-  await user.save();
-
-  return user;
-}
-
-export async function logLastAccessTime(userId) {
-  const user = await User.findByIdAndUpdate(
-    { _id: userId },
-    { 'active.lastAccessTime': localTime() },
-    {
-      upsert: true,
-      new: true,
-    },
-  );
-  return user.active.lastAccessTime;
-}
-
-export async function updatePassword(userId, password) {
-  return await User.findByIdAndUpdate(
-    userId,
-    { 'general.password': password },
-    {
-      new: true,
-    },
-  );
-}
-
-export async function findSocialUser(corp, userInfo) {
-  const { uuid, email, access_token, refresh_token } = userInfo;
-  return await User.findOneAndUpdate(
-    {
-      [`${corp}.uuid`]: uuid,
-    },
-    {
-      [`${corp}.email`]: email,
-      [`${corp}.accessToken`]: access_token,
-      [`${corp}.refreshToken`]: refresh_token,
-      'active.isClosed': false,
-    },
-    { new: true },
-  );
-}
-
-export async function blockOff(userId, type, corp = undefined) {
-  let query;
-  if (type === 'social') {
-    query = {
-      [`${corp}.accessToken`]: 1,
-      [`${corp}.refreshToken`]: 1,
-    };
-  } else {
-    query = { 'general.password': 1 };
+    return user;
   }
 
-  return await User.findOneAndUpdate(
-    { _id: userId },
-    {
-      'active.lastAccessTime': localTime(),
-      'active.isClosed': true,
-      $unset: { ...query },
-    },
-    { new: true, upsert: true },
-  );
-}
+  async logLastAccessTime(userId) {
+    const user = await User.findByIdAndUpdate(
+      { _id: userId },
+      { 'active.lastAccessTime': localTime() },
+      {
+        upsert: true,
+        new: true,
+      },
+    ).lean();
+    return user.active.lastAccessTime;
+  }
 
-export async function countDocs(filter) {
-  return await User.countDocuments({ ...filter });
-}
+  async findSocialUser(userInfo) {
+    const { uuid, email, name, corp, refresh_token } = userInfo;
 
-export async function findUsers(pageSize, page, filter) {
-  return await User.find(
-    { ...filter },
-    {
-      isAdmin: 0,
-      'general.password': 0,
-      'google.accessToken': 0,
-      'naver.accessToken': 0,
-      'kakao.accessToken': 0,
-      'google.refreshToken': 0,
-      'naver.refreshToken': 0,
-      'kakao.refreshToken': 0,
-    },
-  )
-    .limit(pageSize)
-    .skip(pageSize * (page - 1))
-    .exec();
+    return await User.findOneAndUpdate(
+      {
+        [`${corp}.uuid`]: uuid,
+      },
+      {
+        [`${corp}.email`]: email,
+        [`${corp}.refreshToken`]: refresh_token,
+        name,
+        'active.isClosed': false,
+      },
+      { new: true },
+    ).lean();
+  }
+
+  async updatePassword(userId, password) {
+    return await User.findByIdAndUpdate(
+      userId,
+      { 'general.password': password },
+      {
+        new: true,
+      },
+    ).lean();
+  }
+
+  async delete(userId, corp = undefined) {
+    let query;
+
+    corp
+      ? (query = {
+          [`${corp}.refreshToken`]: 1,
+        })
+      : (query = { 'general.password': 1 });
+
+    return await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        'active.lastAccessTime': localTime(),
+        'active.isClosed': true,
+        $unset: query,
+      },
+      { new: true, upsert: true },
+    );
+  }
+
+  async countDocs(filter) {
+    return await User.countDocuments({ ...filter }).lean();
+  }
+
+  async findUsers(pageSize, page, filter) {
+    return await User.find(
+      { ...filter },
+      {
+        isAdmin: 0,
+        'general.password': 0,
+        'google.accessToken': 0,
+        'naver.accessToken': 0,
+        'kakao.accessToken': 0,
+        'google.refreshToken': 0,
+        'naver.refreshToken': 0,
+        'kakao.refreshToken': 0,
+      },
+    )
+      .limit(pageSize)
+      .skip(pageSize * (page - 1))
+      .lean()
+      .exec();
+  }
 }
