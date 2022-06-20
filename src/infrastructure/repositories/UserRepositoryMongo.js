@@ -1,8 +1,18 @@
-import User from '../models/user.js';
-import localTime from '../utils/localTime.js';
+import User from '../../models/user.js';
+import localTime from '../../utils/localTime.js';
+import UserRepository from '../../domain/repositories/UserRepository.js';
 
-export async function findByEmail(email) {
-  return await User.findOne({ 'general.email': email });
+export class UserRepositoryMongo extends UserRepository {
+  constructor() {
+    super();
+  }
+  async findByEmail(email) {
+    return await User.findOne({ 'general.email': email });
+  }
+
+  async findById(userId) {
+    return await User.findById(userId);
+  }
 }
 
 export async function findById(userId) {
@@ -42,8 +52,8 @@ export async function updatePassword(userId, password) {
   );
 }
 
-export async function findSocialUser(socialUserInfo) {
-  const { uuid, email, access_token, refresh_token } = socialUserInfo;
+export async function findSocialUser(corp, userInfo) {
+  const { uuid, email, access_token, refresh_token } = userInfo;
   return await User.findOneAndUpdate(
     {
       [`${corp}.uuid`]: uuid,
@@ -58,7 +68,7 @@ export async function findSocialUser(socialUserInfo) {
   );
 }
 
-export async function blockOff(userId, type) {
+export async function blockOff(userId, type, corp = undefined) {
   let query;
   if (type === 'social') {
     query = {
