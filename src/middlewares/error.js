@@ -1,4 +1,4 @@
-import config from '../setup/config/env.js';
+import config from '../infrastructure/config/env.js';
 import Logger from '../setup/logger.js';
 
 const notFound = (req, res, next) => {

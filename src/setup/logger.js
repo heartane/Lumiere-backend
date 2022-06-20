@@ -1,7 +1,7 @@
 import { createLogger, format, transports } from 'winston';
 import WinstonDaily from 'winston-daily-rotate-file';
 import appRoot from 'app-root-path'; // app root 경로를 가져오는 라이브러리
-import config from './config/env.js';
+import config from '../infrastructure/config/env.js';
 
 const logDir = `${appRoot}/logs`;
 const { combine, timestamp, colorize, printf } = format;

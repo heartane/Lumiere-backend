@@ -3,13 +3,14 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 
-import connectDB from './setup/db.js';
+import connectDB from './infrastructure/database/mongo/connect.js';
 import apiRoutes from './routes/index.js';
 import { errHandler, notFound } from './middlewares/error.js';
 import Logger from './setup/logger.js';
-import config from './setup/config/env.js';
+import config from './infrastructure/config//env.js';
 
 connectDB();
+// @notice db 연결 팩토리 함수 필요!
 
 const app = express();
 

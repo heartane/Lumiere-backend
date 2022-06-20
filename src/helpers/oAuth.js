@@ -2,7 +2,7 @@
 /* eslint-disable max-classes-per-file */
 import axios from 'axios';
 import qs from 'qs';
-import env from '../setup/config/env.js';
+import env from '../infrastructure/config/env.js';
 import Logger from '../setup/logger.js';
 
 class Oauth {
