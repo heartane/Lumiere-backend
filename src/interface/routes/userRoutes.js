@@ -4,13 +4,13 @@ import {
   oAuthLogin,
   register,
   checkEmail,
-  checkPwd,
-  updatePwd,
+  checkPassword,
+  updatePassword,
   logout,
-  dropout,
+  withdraw,
   getUsers,
 } from '../controllers/userController.js';
-import { protect, admin } from '../middlewares/auth.js';
+import { protect, admin } from '../../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -23,8 +23,8 @@ router.route('/:corp').get(oAuthLogin);
 
 router
   .route('/profile')
-  .post(protect, checkPwd)
-  .patch(protect, updatePwd)
-  .delete(protect, dropout);
+  .post(protect, checkPassword)
+  .patch(protect, updatePassword)
+  .delete(protect, withdraw);
 
 export default router;
