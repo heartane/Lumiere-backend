@@ -3,7 +3,7 @@ import serviceLocator from '../infrastructure/config/serviceLocator.js';
 import {
   serializePagination,
   serializeSingleUserInfo,
-} from '../serializers/UserSerializer.js';
+} from '../interface/serializers/UserSerializer.js';
 import env from '../infrastructure/config/env.js';
 import Logger from '../setup/logger.js';
 import localTime from '../utils/localTime.js';
@@ -58,7 +58,7 @@ class UserService {
     if (user.isClosed) {
       return {
         ...statusCode,
-        message: '이미 탈퇴한 회원입니다',
+        message: '탈퇴한 회원입니다',
       };
     }
     if (await user.matchPassword(password)) {

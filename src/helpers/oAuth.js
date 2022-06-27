@@ -5,6 +5,7 @@ import qs from 'qs';
 import env from '../infrastructure/config/env.js';
 import Logger from '../setup/logger.js';
 
+// 상위 클래스
 class Oauth {
   constructor(code) {
     this.code = code;
@@ -31,8 +32,8 @@ class Oauth {
         this.config,
       );
       return res.data;
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 
@@ -49,8 +50,8 @@ class Oauth {
         this.config,
       );
       return res.data;
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 
@@ -62,17 +63,17 @@ class Oauth {
         },
       });
       return res.data;
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 
   setUserInfo() {
-    throw new Error('ERR_METHOD_NOT_IMPLEMENTED');
+    throw new Error('ERR_METHOD_SHOULD_OVERRIDE');
   }
 
   revokeAccess() {
-    throw new Error('ERR_METHOD_NOT_IMPLEMENTED');
+    throw new Error('ERR_METHOD_SHOULD_OVERRIDE');
   }
 }
 
@@ -105,8 +106,8 @@ class Kakao extends Oauth {
         },
       });
       return res.data.id ? '카카오 계정과 연결 끊기 완료' : null;
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 }
@@ -139,8 +140,8 @@ class Google extends Oauth {
         this.config,
       );
       return res.data;
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 
@@ -150,8 +151,8 @@ class Google extends Oauth {
         `${this.userInfo_url}?id_token=${token.id_token}`,
       );
       return res.data;
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 
@@ -171,8 +172,8 @@ class Google extends Oauth {
         `https://oauth2.googleapis.com/revoke?token=${access_token}`,
       );
       return '구글 계정과 연결 끊기 완료';
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 }
@@ -207,14 +208,14 @@ class Naver extends Oauth {
       return res.data.result === 'success'
         ? '네비버 계정과 연결 끊기 완료'
         : null;
-    } catch (error) {
-      Logger.error(error.message);
+    } catch (e) {
+      Logger.error(e.stack);
     }
   }
 }
 
-export default function makeClass(corp, code) {
-  switch (corp) {
+export default function makeClassForTokenRequest(corporation, code) {
+  switch (corporation) {
     case 'google':
       return new Google(code);
     case 'kakao':

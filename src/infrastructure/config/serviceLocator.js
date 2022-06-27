@@ -1,6 +1,7 @@
 import env from './env.js';
-import constants from './constants.js';
-import { UserRepositoryMongo } from '../repositories/UserRepositoryMongo.js';
+import User from '../database/mongo/models/user.js';
+import { UserMongoRepository } from '../repositories/UserMongoRepository.js';
+import { SUPPORTED_DATABASE } from './constants.js';
 
 /* 
 데이터베이스를 상황에 따라 탈부착을 할 수 있게 하고,
@@ -12,8 +13,8 @@ import { UserRepositoryMongo } from '../repositories/UserRepositoryMongo.js';
 
 function injectDatabase() {
   const repoBucket = {};
-  if (env.database.adaptor === constants.SUPPORTED_DATABASE.MONGO) {
-    repoBucket.userRepository = new UserRepositoryMongo();
+  if (env.database.adaptor === SUPPORTED_DATABASE.MONGO) {
+    repoBucket.userRepository = new UserMongoRepository(User);
   }
   return () => repoBucket;
 }
