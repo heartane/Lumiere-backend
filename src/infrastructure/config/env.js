@@ -21,10 +21,13 @@ export default {
     env: required('NODE_ENV'),
   },
   apiRoot: required('API_ROOT'),
-  database: { url: required('MONGODB_URI') },
+  database: {
+    adaptor: required('DB_ADAPTOR'),
+    url: required('MONGODB_URI'),
+  },
   cors: { origin: required('CORS_ORIGIN') },
   bcrypt: {
-    saltRounds: parseInt(required('SALT_ROUNDS', 10)),
+    saltRounds: 10,
   },
   jwt: {
     secretKey: required('JWT_SECRET_KEY'),
@@ -45,5 +48,8 @@ export default {
       clientSecret: required('NAVER_CLIENT_SECRET'),
       state: required('NAVER_STATE'),
     },
+  },
+  pagination: {
+    pageSize: 10,
   },
 };
