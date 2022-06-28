@@ -1,8 +1,8 @@
 ################
 # 제목 작성 가이드
-# == #이슈번호 Type: Task-Title == 형식
+# == [Action] task-title optional-message (#이슈번호) == 형식
 # PR 링크 연결은 #이슈번호 앞에 Fix/Close 사용
-# 예) #5 Feat: 유저 DTO 생성
+# 예) [Feat] 로그인 기능 소설 로그인 (Close #5321)
 
 # 제목과 본문의 분리를 위해 바로 아래 공백은 지우지 마세요 
 

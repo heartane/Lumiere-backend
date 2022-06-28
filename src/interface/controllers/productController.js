@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
-import Product from '../../infrastructure/database/mongo/models/product.js';
-import Artist from '../../infrastructure/database/mongo/models/artist.js';
+import Product from '../../infrastructure/database/mongoose/models/product.js';
+import Artist from '../../infrastructure/database/mongoose/models/artist.js';
 import isAuthorized from '../../utils/isAuthorized.js';
 
 const { ObjectId } = mongoose.Types;

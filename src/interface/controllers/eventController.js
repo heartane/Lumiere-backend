@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import Event from '../../infrastructure/database/mongo/models/event.js';
+import Event from '../../infrastructure/database/mongoose/models/event.js';
 
 // @desc   Create a event
 // @route  POST /api/events

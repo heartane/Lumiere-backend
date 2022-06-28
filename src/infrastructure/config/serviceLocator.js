@@ -1,5 +1,5 @@
 import env from './env.js';
-import User from '../database/mongo/models/user.js';
+import User from '../database/mongoose/models/user.js';
 import { UserMongoRepository } from '../repositories/UserMongoRepository.js';
 import { SUPPORTED_DATABASE } from './constants.js';
 

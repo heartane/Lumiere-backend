@@ -3,7 +3,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 
-import connectDB from './infrastructure/database/mongo/connect.js';
+import connectDB from './infrastructure/database/mongoose/connect.js';
 import apiRoutes from '../src/interface/routes/index.js';
 import {
   errHandler,
