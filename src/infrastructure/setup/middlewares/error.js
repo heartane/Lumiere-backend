@@ -1,5 +1,5 @@
-import config from '../infrastructure/config/env.js';
-import Logger from '../setup/logger.js';
+import config from '../../config/env.js';
+import Logger from '../logger.js';
 
 const notFound = (req, res, next) => {
   const err = new Error(`Not Found - ${req.originalUrl}`);

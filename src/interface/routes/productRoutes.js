@@ -11,7 +11,7 @@ import {
   getCartItems,
   getTotalPrice,
 } from '../controllers/productController.js';
-import { protect, admin } from '../middlewares/auth.js';
+import { protect, admin } from '../../infrastructure/setup/middlewares/auth.js';
 
 const router = express.Router();
 

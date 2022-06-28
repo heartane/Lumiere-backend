@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import asyncHandler from 'express-async-handler';
-import Artist from '../infrastructure/database/mongo/models/artist.js';
-import Product from '../infrastructure/database/mongo/models/product.js';
-import isAuthorized from '../utils/isAuthorized.js';
+import Artist from '../../infrastructure/database/mongo/models/artist.js';
+import Product from '../../infrastructure/database/mongo/models/product.js';
+import isAuthorized from '../../utils/isAuthorized.js';
 
 // @desc   Create a Artist
 // @route  POST /api/artists

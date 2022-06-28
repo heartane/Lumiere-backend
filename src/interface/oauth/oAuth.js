@@ -2,8 +2,8 @@
 /* eslint-disable max-classes-per-file */
 import axios from 'axios';
 import qs from 'qs';
-import env from '../infrastructure/config/env.js';
-import Logger from '../setup/logger.js';
+import env from '../../infrastructure/config/env.js';
+import Logger from '../../infrastructure/setup/logger.js';
 
 // 상위 클래스
 class Oauth {

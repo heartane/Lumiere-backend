@@ -1,6 +1,6 @@
 import localTime from '../../utils/localTime.js';
 import UserRepository from '../../domain/repositories/UserRepository.js';
-import Logger from '../../setup/logger.js';
+import Logger from '../setup/logger.js';
 
 export class UserMongoRepository extends UserRepository {
   constructor(User) {

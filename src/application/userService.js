@@ -5,10 +5,11 @@ import {
   serializeSingleUserInfo,
 } from '../interface/serializers/UserSerializer.js';
 import env from '../infrastructure/config/env.js';
-import Logger from '../setup/logger.js';
-import localTime from '../utils/localTime.js';
-import makeClassForTokenRequest from '../helpers/oAuth.js';
+
+import makeClassForTokenRequest from '../interface/oauth/oAuth.js';
 import { HTTP_STATUS } from '../infrastructure/config/constants.js';
+import Logger from '../infrastructure/setup/logger.js';
+import localTime from '../utils/localTime.js';
 
 class UserService {
   constructor(userRepository) {

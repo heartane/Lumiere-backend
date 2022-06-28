@@ -4,10 +4,14 @@ import helmet from 'helmet';
 import cors from 'cors';
 
 import connectDB from './infrastructure/database/mongo/connect.js';
-import apiRoutes from './routes/index.js';
-import { errHandler, notFound } from './middlewares/error.js';
-import Logger from './setup/logger.js';
+import apiRoutes from '../src/interface/routes/index.js';
+import {
+  errHandler,
+  notFound,
+} from './infrastructure/setup/middlewares/error.js';
+
 import config from './infrastructure/config//env.js';
+import Logger from './infrastructure/setup/logger.js';
 
 connectDB();
 // @notice db 연결 팩토리 함수 필요!
