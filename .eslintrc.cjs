@@ -1,3 +1,3 @@
 module.exports = {
-  extends: ['../.eslintrc-base.json'],
+  extends: ['./.eslintrc-base.json'],
 };
