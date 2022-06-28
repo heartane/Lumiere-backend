@@ -1,11 +1,9 @@
-import bcrypt from 'bcrypt';
 import serviceLocator from '../infrastructure/config/serviceLocator.js';
 import {
   serializePagination,
   serializeSingleUserInfo,
 } from '../interface/serializers/UserSerializer.js';
-import env from '../infrastructure/config/env.js';
-
+import config from '../infrastructure/config/env.js';
 import makeClassForTokenRequest from '../interface/oauth/oAuth.js';
 import { HTTP_STATUS } from '../infrastructure/config/constants.js';
 import Logger from '../infrastructure/setup/logger.js';
@@ -134,14 +132,9 @@ class UserService {
   }
 
   async updatePassword(userId, password) {
-    const hashedPassword = await bcrypt.hash(password, env.bcrypt.saltRounds);
-    const updatedUser = await this.userRepository.findByIdAndUpdate(
-      userId,
-      {
-        password: hashedPassword,
-      },
-      { new: true },
-    );
+    const updatedUser = await this.userRepository.findByIdAndUpdate(userId, {
+      password,
+    });
 
     return {
       status: HTTP_STATUS.OK,
@@ -180,7 +173,7 @@ class UserService {
   }
 
   async getUsers(page) {
-    const pageSize = env.pagination.pageSize;
+    const pageSize = config.pagination.pageSize;
     const filter = { isAdmin: false };
     const count = await this.userRepository.countDocuments(filter);
     const users = await this.userRepository.findUsers(pageSize, page, filter);
