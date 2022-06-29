@@ -6,34 +6,34 @@ import { HTTP_STATUS } from '../../config/constants.js';
 // 로그인 유저만 private route 접근을 허락해주는 함수
 // 토큰 유무와 유효성 검사
 
-const protect = asyncHandler(async (req, res, next) => {
-  let token;
+const protect = asyncHandler((req, res, next) => {
   const { authorization } = req.headers;
 
-  if (authorization && authorization.startsWith('Bearer')) {
-    try {
-      // eslint-disable-next-line prefer-destructuring
-      token = authorization.split(' ')[1];
-      req.user = jwtManager.verify(token);
-      next();
-    } catch (e) {
-      Logger.error(e.stack);
-      res.status(HTTP_STATUS.UNAUTHORIZED);
-      throw new Error('Not authorized, token failed');
-    }
+  if (!(authorization && authorization.startsWith('Bearer'))) {
+    return res
+      .status(HTTP_STATUS.UNAUTHORIZED)
+      .json({ message: 'Not authorized, no token' });
   }
-  if (!token) {
-    res.status(HTTP_STATUS.UNAUTHORIZED);
-    throw new Error('Not authorized, no token');
+
+  const token = authorization.split(' ')[1];
+  try {
+    req.user = jwtManager.verify(token);
+    next();
+  } catch (e) {
+    Logger.error(e.stack);
+    res
+      .status(HTTP_STATUS.UNAUTHORIZED)
+      .json({ message: 'Not authorized, token failed' });
   }
 });
 
-const admin = asyncHandler(async (req, res, next) => {
-  if (req.user && req.user.isAdmin) {
+const admin = asyncHandler((req, res, next) => {
+  if (req.user.isAdmin) {
     next();
   } else {
-    res.status(HTTP_STATUS.UNAUTHORIZED);
-    throw new Error('Not authorized as an admin');
+    res
+      .status(HTTP_STATUS.FORBIDDEN)
+      .json({ message: 'Not authorized, as an admin' });
   }
 });
 
