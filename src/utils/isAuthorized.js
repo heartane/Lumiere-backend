@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwtManager from '../infrastructure/setup/security/jwtTokenManager';
 
 const isAuthorized = (req) => {
   const { authorization } = req.headers;
@@ -7,7 +7,7 @@ const isAuthorized = (req) => {
     // eslint-disable-next-line prefer-destructuring
     const token = authorization.split(' ')[1];
     try {
-      return jwt.verify(token, process.env.JWT_SECRET_KEY);
+      return jwtManager.verify(token);
     } catch (e) {
       // when token expired
       return null;
