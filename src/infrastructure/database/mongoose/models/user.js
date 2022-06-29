@@ -1,6 +1,8 @@
 /* eslint-disable func-names */
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import env from '../../../config/env.js';
+import Logger from '../../../setup/logger.js';
 
 const userSchema = mongoose.Schema(
   {
@@ -61,6 +63,39 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   const password = await bcrypt.compare(enteredPassword, this.password);
   return password;
 };
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(env.bcrypt.saltRounds);
+    this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  } catch (e) {
+    Logger.error(e.stack);
+    return next(e);
+  }
+});
+
+// hook명이 반드시 findOndAndUpdate이어야 동작한다.
+userSchema.pre('findOneAndUpdate', async function (next) {
+  const update = { ...this.getUpdate() };
+
+  // Only run this function if password was modified
+  if (!update.password) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(env.bcrypt.saltRounds);
+    update.password = await bcrypt.hash(this.getUpdate().password, salt);
+    this.setUpdate(update);
+    return next();
+  } catch (e) {
+    Logger.error(e.stack);
+    return next(e);
+  }
+});
 
 const User = mongoose.model('User', userSchema);
 
