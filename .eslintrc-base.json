@@ -10,6 +10,8 @@
     "no-use-before-define": 0,
     "import/no-extraneous-dependencies": 0,
     "no-shadow": 0,
-    "no-console": "off"
+    "no-console": "off",
+    "no-return-await": "error",
+    "no-underscore-dangle": "off"
   }
 }
