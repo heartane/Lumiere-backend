@@ -1,3 +1,5 @@
+/* eslint-disable no-return-await */
+/* eslint-disable camelcase */
 import localTime from '../../utils/localTime.js';
 import UserRepository from '../../domain/repositories/UserRepository.js';
 import Logger from '../setup/logger.js';
@@ -7,6 +9,7 @@ export class UserMongoRepository extends UserRepository {
     super(User);
     this.user = User;
   }
+
   async findByEmail(email) {
     return await this.user.findOne({ email });
   }
@@ -39,10 +42,10 @@ export class UserMongoRepository extends UserRepository {
           password,
         });
       }
-      return user;
     } catch (e) {
       Logger.error(e.stack);
     }
+    return user;
   }
 
   async findByIdAndUpdate(userId, updateQuery, queryOptions = { new: true }) {
@@ -70,13 +73,11 @@ export class UserMongoRepository extends UserRepository {
   }
 
   async delete(userId, isSocial) {
-    let query;
-
-    isSocial
-      ? (query = {
+    const query = isSocial
+      ? {
           'socialInfo.refreshToken': 1,
-        })
-      : (query = { password: 1 });
+        }
+      : { password: 1 };
 
     return await this.user.findByIdAndUpdate(
       userId,

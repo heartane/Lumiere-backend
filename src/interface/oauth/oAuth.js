@@ -1,5 +1,6 @@
-/* eslint-disable no-return-await */
+/* eslint-disable camelcase */
 /* eslint-disable max-classes-per-file */
+/* eslint-disable class-methods-use-this */
 import axios from 'axios';
 import qs from 'qs';
 import env from '../../infrastructure/config/env.js';
@@ -17,8 +18,9 @@ class Oauth {
   }
 
   async getAccessToken() {
+    let res;
     try {
-      const res = await axios.post(
+      res = await axios.post(
         this.token_url,
         qs.stringify({
           grant_type: 'authorization_code',
@@ -31,15 +33,16 @@ class Oauth {
         }),
         this.config,
       );
-      return res.data;
     } catch (e) {
       Logger.error(e.stack);
     }
+    return res.data;
   }
 
   async updateAccessToken() {
+    let res;
     try {
-      const res = await axios.post(
+      res = await axios.post(
         this.token_url,
         qs.stringify({
           grant_type: 'refresh_token',
@@ -49,23 +52,24 @@ class Oauth {
         }),
         this.config,
       );
-      return res.data;
     } catch (e) {
       Logger.error(e.stack);
     }
+    return res.data;
   }
 
   async getUserInfo(token) {
+    let res;
     try {
-      const res = await axios.get(this.userInfo_url, {
+      res = await axios.get(this.userInfo_url, {
         headers: {
           Authorization: `Bearer ${token.access_token}`,
         },
       });
-      return res.data;
     } catch (e) {
       Logger.error(e.stack);
     }
+    return res.data;
   }
 
   setUserInfo() {
@@ -90,7 +94,7 @@ class Kakao extends Oauth {
 
   async setUserInfo(token) {
     const userInfo = await this.getUserInfo(token);
-    let result = {};
+    const result = {};
     result.uuid = userInfo.id;
     result.email = userInfo.kakao_account.email;
     result.name = userInfo.kakao_account.profile.nickname;
@@ -98,17 +102,18 @@ class Kakao extends Oauth {
   }
 
   async revokeAccess() {
+    let res;
     const { access_token } = await this.updateAccessToken();
     try {
-      const res = await axios.get('https://kapi.kakao.com/v1/user/unlink', {
+      res = await axios.get('https://kapi.kakao.com/v1/user/unlink', {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
       });
-      return res.data.id ? '카카오 계정과 연결 끊기 완료' : null;
     } catch (e) {
       Logger.error(e.stack);
     }
+    return res.data.id ? '카카오 계정과 연결 끊기 완료' : null;
   }
 }
 
@@ -126,8 +131,9 @@ class Google extends Oauth {
   }
 
   async getAccessToken() {
+    let res;
     try {
-      const res = await axios.post(
+      res = await axios.post(
         this.token_url,
         qs.stringify({
           grantType: 'authorization_code',
@@ -139,26 +145,25 @@ class Google extends Oauth {
         }),
         this.config,
       );
-      return res.data;
     } catch (e) {
       Logger.error(e.stack);
     }
+    return res.data;
   }
 
   async getUserInfo(token) {
+    let res;
     try {
-      const res = await axios.get(
-        `${this.userInfo_url}?id_token=${token.id_token}`,
-      );
-      return res.data;
+      res = await axios.get(`${this.userInfo_url}?id_token=${token.id_token}`);
     } catch (e) {
       Logger.error(e.stack);
     }
+    return res.data;
   }
 
   async setUserInfo(token) {
     const userInfo = await this.getUserInfo(token);
-    let result = {};
+    const result = {};
     result.uuid = userInfo.sub;
     result.email = userInfo.email;
     result.name = userInfo.name;
@@ -171,10 +176,10 @@ class Google extends Oauth {
       await axios.post(
         `https://oauth2.googleapis.com/revoke?token=${access_token}`,
       );
-      return '구글 계정과 연결 끊기 완료';
     } catch (e) {
       Logger.error(e.stack);
     }
+    return '구글 계정과 연결 끊기 완료';
   }
 }
 
@@ -192,7 +197,7 @@ class Naver extends Oauth {
 
   async setUserInfo(token) {
     const userInfo = await this.getUserInfo(token);
-    let result = {};
+    const result = {};
     result.uuid = userInfo.response.id;
     result.email = userInfo.response.email;
     result.name = userInfo.response.name;
@@ -200,17 +205,18 @@ class Naver extends Oauth {
   }
 
   async revokeAccess() {
+    let res;
     const { access_token } = await this.updateAccessToken();
     try {
-      const res = await axios.post(
+      res = await axios.post(
         `https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=${this.client_id}&client_secret=${this.client_secret}&access_token=${access_token}&service_provider=NAVER`,
       );
-      return res.data.result === 'success'
-        ? '네비버 계정과 연결 끊기 완료'
-        : null;
     } catch (e) {
       Logger.error(e.stack);
     }
+    return res.data.result === 'success'
+      ? '네비버 계정과 연결 끊기 완료'
+      : null;
   }
 }
 
