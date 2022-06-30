@@ -5,6 +5,6 @@ module.exports = {
     ecmaVersion: 13,
   },
   env: {
-    test: true,
+    'jest/globals': true,
   },
 };

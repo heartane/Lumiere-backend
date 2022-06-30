@@ -7,8 +7,10 @@
   "scripts": {
     "start": "node src/index.js",
     "server": "nodemon src/index.js",
-    "test": "DOTENV_CONFIG_PATH=/.env.test jest --watchAll",
-    "coverage": "jest --coverage"
+    "test": "DOTENV_CONFIG_PATH=./.env.test ./node_modules/.bin/jest --verbose",
+    "test:watch": "DOTENV_CONFIG_PATH=./.env.test jest --watchAll --verbose",
+    "coverage": "jest --coverage",
+    "lint": "./node_modules/.bin/eslint ."
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-async-handler": "^1.2.0",
+    "express-validator": "^6.14.2",
     "helmet": "^5.1.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.13",
@@ -44,6 +47,7 @@
     "eslint": "^8.18.0",
     "eslint-config-airbnb": "^19.0.1",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^26.5.3",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^28.1.1",
     "node-mocks-http": "^1.11.0",
