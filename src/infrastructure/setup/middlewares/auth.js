@@ -18,13 +18,13 @@ const protect = asyncHandler((req, res, next) => {
   const token = authorization.split(' ')[1];
   try {
     req.user = jwtManager.verify(token);
-    next();
   } catch (e) {
     Logger.error(e.stack);
-    res
+    return res
       .status(HTTP_STATUS.UNAUTHORIZED)
       .json({ message: 'Not authorized, token failed' });
   }
+  return next();
 });
 
 const admin = asyncHandler((req, res, next) => {
