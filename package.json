@@ -7,9 +7,10 @@
   "scripts": {
     "start": "node src/index.js",
     "server": "nodemon src/index.js",
-    "test": "DOTENV_CONFIG_PATH=./.env.test ./node_modules/.bin/jest --verbose",
-    "test:watch": "DOTENV_CONFIG_PATH=./.env.test jest --watchAll --verbose",
-    "coverage": "jest --coverage",
+    "test": "./node_modules/.bin/jest --verbose",
+    "test:watch": "jest --watchAll --verbose",
+    "test:ci": "jest --verbose --runInBand --detectOpenHandles --forceExit",
+    "test:cover": "jest --coverage",
     "lint": "./node_modules/.bin/eslint ."
   },
   "repository": {
