@@ -21,6 +21,7 @@ node_modules/
 
 # Env
 .env
+.env.test
 .env.local
 .env.development.local
 .env.test.local

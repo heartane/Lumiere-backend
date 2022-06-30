@@ -4,7 +4,7 @@ name: PR CI pipeline
 
 on:
   pull_request:
-    branches: [ "dev" ]
+    branches: ['dev']
 
 jobs:
   ci:
@@ -23,7 +23,22 @@ jobs:
       - name: Eslint
         run: npm run lint
       - name: Test
+        env:
+          NODE_ENV: ${{ secrets.NODE_ENV }}
+          API_ROOT: ${{ secrets.API_ROOT }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+          DB_ADAPTOR: ${{ secrets.DB_ADAPTOR }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
+          IMPORT_KEY: ${{ secrets.IMPORT_KEY }}
+          IMPORT_SECRET: ${{ secrets.IMPORT_SECRET }}
+          REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          NAVER_STATE: ${{ secrets.NAVER_STATE }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: npm test
-
-
-
