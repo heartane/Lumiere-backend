@@ -1,4 +1,4 @@
-import jwtManager from '../infrastructure/setup/security/jwtTokenManager';
+import jwtManager from '../infrastructure/setup/security/jwtTokenManager.js';
 
 const isAuthorized = (req) => {
   const { authorization } = req.headers;

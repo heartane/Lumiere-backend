@@ -1,6 +1,14 @@
 {
   "plugins": ["prettier"],
   "extends": ["airbnb", "plugin:prettier/recommended"],
+  "overrides": [
+    {
+      "files": ["tests/**"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/recommended"],
+      "rules": { "jest/prefer-expect-assertions": "off" }
+    }
+  ],
   "rules": {
     "linebreak-style": 0,
     "import/prefer-default-export": 0,

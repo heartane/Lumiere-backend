@@ -17,7 +17,7 @@ function required(key, defaultValue = undefined) {
 
 export default {
   server: {
-    port: parseInt(required('PORT', 8080)),
+    port: Number(required('PORT', 8080)),
     env: required('NODE_ENV'),
   },
   apiRoot: required('API_ROOT'),
