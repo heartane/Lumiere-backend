@@ -1,0 +1,29 @@
+# This is a basic workflow to help you get started with Actions
+
+name: PR CI pipeline
+
+on:
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+  ci:
+    name: eslint & test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm ci
+      - run: npm run build --if-present
+      - name: Eslint
+        run: npm run lint
+      - name: Test
+        run: npm test
+
+
+
