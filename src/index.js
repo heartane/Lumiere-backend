@@ -2,15 +2,13 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-
 import connectDB from './infrastructure/database/mongoose/connect.js';
-import apiRoutes from '../src/interface/routes/index.js';
+import apiRouter from './interface/routes/index.js';
 import {
   errHandler,
   notFound,
 } from './infrastructure/setup/middlewares/error.js';
-
-import config from './infrastructure/config//env.js';
+import config from './infrastructure/config/env.js';
 import Logger from './infrastructure/setup/logger.js';
 
 connectDB();
@@ -34,7 +32,7 @@ app.get('/', (req, res) => {
   res.send('Lumiere API is running...');
 });
 
-app.use(`${config.apiRoot}`, apiRoutes);
+app.use(`${config.apiRoot}`, apiRouter);
 
 app.use(notFound);
 app.use(errHandler);
