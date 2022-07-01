@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import serviceLocator from '../infrastructure/config/serviceLocator.js';
 import {
   serializePagination,
   serializeSingleUserInfo,
@@ -10,7 +9,7 @@ import { HTTP_STATUS } from '../infrastructure/config/constants.js';
 import Logger from '../infrastructure/setup/logger.js';
 import localTime from '../utils/localTime.js';
 
-class UserService {
+export default class UserService {
   constructor(userRepository) {
     this.userRepository = userRepository;
   }
@@ -181,8 +180,3 @@ class UserService {
     };
   }
 }
-
-const userRepositoryInstance = serviceLocator().userRepository;
-const userService = new UserService(userRepositoryInstance);
-
-export default userService;

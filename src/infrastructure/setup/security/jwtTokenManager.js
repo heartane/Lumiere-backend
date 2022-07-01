@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 import env from '../../config/env.js';
 
-class JwtManager {
+export default class JwtManager {
   encode(payload) {
     return jwt.sign(payload, env.jwt.secretKey, {
       expiresIn: env.jwt.expireTime,
@@ -13,7 +13,3 @@ class JwtManager {
     return jwt.verify(token, env.jwt.secretKey);
   }
 }
-
-const jwtManager = new JwtManager();
-
-export default jwtManager;

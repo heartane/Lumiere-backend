@@ -1,13 +1,14 @@
 /* eslint-disable no-return-await */
 /* eslint-disable camelcase */
-import localTime from '../../utils/localTime.js';
+
 import UserRepository from '../../domain/repositories/UserRepository.js';
+import localTime from '../../utils/localTime.js';
 import Logger from '../setup/logger.js';
 
-export class UserMongoRepository extends UserRepository {
-  constructor(User) {
-    super(User);
-    this.user = User;
+export default class UserMongoRepository extends UserRepository {
+  constructor(user) {
+    super();
+    this.user = user;
   }
 
   async findByEmail(email) {
