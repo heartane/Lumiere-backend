@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Logger from '../logger.js';
-import jwtManager from '../security/jwtTokenManager.js';
 import { HTTP_STATUS } from '../../config/constants.js';
+import { getDependency } from '../../config/injector.js';
 
 // 로그인 유저만 private route 접근을 허락해주는 함수
 // 토큰 유무와 유효성 검사
@@ -17,7 +17,7 @@ const protect = asyncHandler((req, res, next) => {
 
   const token = authorization.split(' ')[1];
   try {
-    req.user = jwtManager.verify(token);
+    req.user = getDependency('jwtManager').verify(token);
   } catch (e) {
     Logger.error(e.stack);
     return res

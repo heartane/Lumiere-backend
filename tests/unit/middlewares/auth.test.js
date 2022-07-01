@@ -1,16 +1,23 @@
 import httpMocks from 'node-mocks-http';
 import { faker } from '@faker-js/faker';
+import { Container } from 'typedi';
 import {
   admin,
   protect,
 } from '../../../src/infrastructure/setup/middlewares/auth';
-import jwtManager from '../../../src/infrastructure/setup/security/jwtTokenManager';
+import JwtManager from '../../../src/infrastructure/setup/security/jwtTokenManager';
 
 describe('🎯 Auth Middleware', () => {
   let res;
   let next;
   let token;
   let userId;
+  let jwtManager;
+
+  beforeAll(() => {
+    Container.set('jwtManager', JwtManager);
+    jwtManager = Container.get('jwtManager');
+  });
 
   beforeEach(() => {
     res = httpMocks.createResponse();

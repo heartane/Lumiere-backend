@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -10,8 +11,10 @@ import {
 } from './infrastructure/setup/middlewares/error.js';
 import config from './infrastructure/config/env.js';
 import Logger from './infrastructure/setup/logger.js';
+import { injectedDataAccess } from './infrastructure/config/injector.js';
 
 connectDB();
+injectedDataAccess();
 // @notice db 연결 팩토리 함수 필요!
 
 const app = express();
