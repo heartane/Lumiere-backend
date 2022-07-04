@@ -12,14 +12,14 @@
 <p align="center">
   <a href="https://github.com/heartane/Lumiere-backend/wiki"><strong>Documentation</strong></a> ·
   <a href="https://www.notion.so/Minimanimo-0bd73eaa9a904b5bb554b876603bab0b"><strong>Team Portfolio</strong></a> ·
-  <a href="https://github.com/heartane/Lumiere-backend/files/9038245/_.pdf"><strong>My Resume</strong></a>
+  <a href="https://github.com/heartane/Lumiere-backend/files/9038245/진가람_백엔드.pdf"><strong>My Resume</strong></a>
 </p>
 <br/>
 
 # 🌟 Lumiere
 <p> <strong> 루미에르는 아마추어 및 신입 작가의 캔버스 작품을 소비자와 이어주는 E-Commerce 플랫폼입니다. </strong> <br/>
 <br/>
-이 서비스는 미대를 졸업하고 지금도 취미로 그림을 그리는 친구의 작품이 작업실에 마냥 쌓여있는 것이 아깝다는 생각에서 시작되었습니다. <br/>
+이 서비스는 미대를 졸업하고 여전히 취미로 그림을 그리는 친구의 작품이 작업실에 마냥 쌓여있는 것이 아깝다는 생각에서 시작되었습니다. <br/>
 캔버스화는 미술관에서나 보는 범접할 수 없는 예술이라는 관념에서 벗어나, <br/>
 보다 쉽게 접하고 하나쯤은 소유할 수 있으며, 더불어 쉽게 판매할 수 있다는 취지를 가지고 프로젝트를 진행하였습니다. </p>
 
@@ -54,7 +54,7 @@
 OOP, 아키텍처 등 모든 좋은 코드를 위한 패러다임에서 중요한 포인트 중 하나는 의존성 관리입니다. <br/>
 <br/>
 관심사 분리를 위해서는 의존성 규칙이 필요하다는 것을 깨달았습니다. <br/>
-소프트웨어가 외부 인프라가 아닌 어플리케이션 중심의 설계가 될 수 있도록 의존 흐름은 외부에서 내부로 흐르는 단 방향이 될 수 있도록 리팩토링하고 있습니다.  <br/>
+소프트웨어가 외부 인프라가 아닌 어플리케이션 중심의 설계가 될 수 있도록, 외부에서 내부 단 방향 의존흐름에 유념하여 리팩토링하고 있습니다.  <br/>
 
 ### write test code
 코드 변경에 따른 버그로부터 안정적인 리팩토링을 할 수 있도록 하는 테스트의 중요성을 알게 되었습니다. <br/>
