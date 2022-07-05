@@ -14,7 +14,7 @@ export const productInputData = {
   price: faker.random.numeric(6),
 };
 
-const { artist, artCode, ...productDataOnly } = productInputData;
+const { artCode, ...productDataOnly } = productInputData;
 
 export const singleProduct = {
   ...productDataOnly,
@@ -25,15 +25,18 @@ export const singleProduct = {
   updatedAt: faker.date.recent(),
 };
 
+export const singleProductWithPopulation = {
+  ...singleProduct,
+  artist: {
+    _id: faker.random.alphaNumeric(24),
+    name: faker.random.word(),
+    aka: faker.random.word(),
+    code: faker.random.numeric(4),
+    record: faker.random.words(5),
+  },
+};
 export const severalProducts = [
   {
-    ...singleProduct,
-    artist: {
-      _id: faker.random.alphaNumeric(24),
-      name: faker.random.word(),
-      aka: faker.random.word(),
-      code: faker.random.numeric(4),
-      record: faker.random.words(5),
-    },
+    ...singleProductWithPopulation,
   },
 ];
