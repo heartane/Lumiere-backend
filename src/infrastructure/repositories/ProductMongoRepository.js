@@ -1,6 +1,7 @@
 /* eslint-disable no-return-await */
 import mongoose from 'mongoose';
 import Product from '../database/mongoose/models/product.js';
+import Logger from '../setup/logger.js';
 
 const { ObjectId } = mongoose.Types;
 
@@ -95,7 +96,7 @@ export class ProductMongoRepository {
     return count[0].of_products;
   }
 
-  async updateOne(productId, updateQuery) {
+  async updateProductInput(productId, updateQuery) {
     return await this.#product.findByIdAndUpdate(
       productId,
       { ...updateQuery },
@@ -110,6 +111,31 @@ export class ProductMongoRepository {
       _id: productId,
       inStock: true,
     });
+  }
+
+  async findByIdAndCountView(productId) {
+    return await this.#product
+      .findByIdAndUpdate(
+        productId,
+        { $inc: { views: 1 } }, // 조회수 올리기
+        {
+          projection: {
+            views: 0,
+            updatedAt: 0,
+          },
+          new: true,
+        },
+      )
+      .populate('artist', ['name', 'code', 'aka', 'record']);
+  }
+
+  async findManyForPromote(artistId, limit, option = undefined) {
+    const matchQuery = option ? { $ne: artistId } : artistId;
+    return await this.#product.aggregate([
+      { $match: { artist: matchQuery } },
+      { $sample: { size: limit } },
+      { $project: { image: 1 } },
+    ]);
   }
   //-----
 }
@@ -170,32 +196,6 @@ function organizeFilterScope(filterField) {
   return filterScope;
 }
 //-----------------
-
-export async function findByIdAndCountView(productId) {
-  return await Product.findByIdAndUpdate(
-    productId,
-    { $inc: { views: 1 } }, // 조회수 올리기
-    {
-      projection: {
-        views: 0,
-        updatedAt: 0,
-      },
-      new: true,
-    },
-  ).populate('artist', ['name', 'code', 'aka', 'record']);
-}
-
-export async function findManyForPromote(artistId, limit, option = undefined) {
-  let match = artistId;
-  if (option) {
-    match = { $ne: artistId };
-  }
-  return await Product.aggregate([
-    { $match: { artist: match } },
-    { $sample: { size: limit } },
-    { $project: { image: 1 } },
-  ]);
-}
 
 export async function getLatest() {
   return await Product.find({}, { image: 1 }).limit(5).sort({ _id: -1 }).lean();
