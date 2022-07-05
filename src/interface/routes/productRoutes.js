@@ -1,22 +1,28 @@
 import express from 'express';
+
 import {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getProducts,
   getProductById,
   getLatestProducts,
   zzimProduct,
   getZzimProducts,
   getCartItems,
   getTotalPrice,
+  ProductController,
 } from '../controllers/productController.js';
 import { protect, admin } from '../../infrastructure/setup/middlewares/auth.js';
+import * as validate from '../helper/validate.js';
+import { productService } from '../../application/productService.js';
 
 const router = express.Router();
 
+// ⛳️ 임시! 추후 수정
+const productController = new ProductController(productService);
+
 // endpoint => /api/products
-router.route('/').get(getProducts).post(protect, admin, createProduct);
+router
+  .route('/')
+  .get(productController.getProducts)
+  .post(protect, admin, validate.productInfo, productController.createProduct);
 
 router.route('/latest').get(getLatestProducts);
 router.route('/total-price').get(protect, getTotalPrice);
@@ -25,7 +31,7 @@ router.route('/zzim').patch(protect, zzimProduct).get(protect, getZzimProducts);
 router
   .route('/:id')
   .get(getProductById)
-  .patch(protect, admin, updateProduct)
-  .delete(protect, admin, deleteProduct);
+  .patch(protect, admin, productController.updateProduct)
+  .delete(protect, admin, productController.deleteProduct);
 
 export default router;
