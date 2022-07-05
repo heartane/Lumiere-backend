@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator';
 import { HTTP_STATUS } from '../../config/constants.js';
 
-export default function validate(req, res, next) {
+export default function validator(req, res, next) {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
