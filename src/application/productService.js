@@ -73,12 +73,43 @@ export default class ProductService {
   }
 
   async updateProduct(productId, updateQuery) {
-    // 데이터 유효성 검사가 필요할까?
-    return await this.#productRepository.updateOne(productId, updateQuery);
+    return await this.#productRepository.updateProductInput(
+      productId,
+      updateQuery,
+    );
   }
 
   async deleteProduct(productId) {
-    return await this.#artistRepository.deleteOne(productId);
+    try {
+      const deletedProduct = await this.#productRepository.deleteOne(productId);
+      if (!deletedProduct) return false;
+      await this.#artistRepository.reduceCountOfWorks(deletedProduct.artist);
+      return true;
+    } catch (e) {
+      Logger.error(e.stack);
+    }
+    return null;
+  }
+
+  async getProductById(productId) {
+    try {
+      const productDetail = await this.#productRepository.findByIdAndCountView(
+        productId,
+      );
+      const productsByArtist = await this.#productRepository.findManyForPromote(
+        productDetail.artist._id,
+        4,
+      );
+      const productsByRandom = await this.#productRepository.findManyForPromote(
+        productDetail.artist._id,
+        8,
+        true,
+      );
+      return { productDetail, productsByArtist, productsByRandom };
+    } catch (e) {
+      Logger.error(e.stack);
+    }
+    return null;
   }
 
   //-------------

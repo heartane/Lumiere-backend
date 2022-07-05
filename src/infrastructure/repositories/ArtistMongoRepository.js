@@ -15,4 +15,14 @@ export default class ArtistMongoRepository {
       { new: true },
     );
   }
+
+  async reduceCountOfWorks(artistId) {
+    return await this.#artist.findByIdAndUpdate(
+      artistId,
+      {
+        $inc: { countOfWorks: -1 },
+      },
+      { new: true },
+    );
+  }
 }
