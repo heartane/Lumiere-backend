@@ -21,8 +21,13 @@ const productController = new ProductController(productService);
 // endpoint => /api/products
 router
   .route('/')
-  .get(productController.getProducts)
-  .post(protect, admin, validate.productInfo, productController.createProduct);
+  .get(validate.getProductsInput, productController.getProducts)
+  .post(
+    protect,
+    admin,
+    validate.createProductInput,
+    productController.createProduct,
+  );
 
 router.route('/latest').get(getLatestProducts);
 router.route('/total-price').get(protect, getTotalPrice);
@@ -31,7 +36,12 @@ router.route('/zzim').patch(protect, zzimProduct).get(protect, getZzimProducts);
 router
   .route('/:id')
   .get(getProductById)
-  .patch(protect, admin, productController.updateProduct)
-  .delete(protect, admin, productController.deleteProduct);
+  .patch(
+    protect,
+    admin,
+    validate.updateProductInput,
+    productController.updateProduct,
+  )
+  .delete(protect, admin, validate.productId, productController.deleteProduct);
 
 export default router;

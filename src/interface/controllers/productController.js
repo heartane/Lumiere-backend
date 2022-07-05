@@ -49,7 +49,10 @@ export class ProductController {
   // @route   PATCH /api/products/:id
   // @access  Private/Admin
   updateProduct = asyncHandler(async (req, res) => {
-    const data = await this.#productService.updateOne(req.params.id, req.body);
+    const data = await this.#productService.updateProduct(
+      req.params.id,
+      req.body,
+    );
 
     res.status(HTTP_STATUS.OK).json(data);
   });
@@ -60,13 +63,26 @@ export class ProductController {
   deleteProduct = asyncHandler(async (req, res) => {
     // 재고 있을 시에만 삭제 가능
 
-    const deleted = await this.#productService.deleteOne(req.params.id);
+    const deleted = await this.#productService.deleteProduct(req.params.id);
 
     const message = deleted
       ? `해당 상품이 삭제되었습니다`
       : '해당 상품은 삭제할 수 없습니다';
 
     res.status(HTTP_STATUS.OK).json({ message });
+  });
+
+  // @desc   Fetch single product
+  // @route  GET /api/products/:id
+  // @access Public
+  getProductById = asyncHandler(async (req, res) => {
+    const data = await this.#productService.getProductById(req.params.id);
+
+    if (!data) {
+      res.statusCode(HTTP_STATUS.NOT_FOUND);
+    } else {
+      res.status(HTTP_STATUS.OK).json(data);
+    }
   });
   //-------------
 }
