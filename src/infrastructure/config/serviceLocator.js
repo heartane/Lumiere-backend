@@ -2,6 +2,10 @@ import env from './env.js';
 import User from '../database/mongoose/models/user.js';
 import { UserMongoRepository } from '../repositories/UserMongoRepository.js';
 import { SUPPORTED_DATABASE } from './constants.js';
+import { ProductMongoRepository } from '../repositories/ProductMongoRepository.js';
+import Product from '../database/mongoose/models/product.js';
+import Artist from '../database/mongoose/models/artist.js';
+import ArtistMongoRepository from '../repositories/ArtistMongoRepository.js';
 
 /* 
 데이터베이스를 상황에 따라 탈부착을 할 수 있게 하고,
@@ -15,6 +19,8 @@ function injectDatabase() {
   const repoBucket = {};
   if (env.database.adaptor === SUPPORTED_DATABASE.MONGO) {
     repoBucket.userRepository = new UserMongoRepository(User);
+    repoBucket.productRepository = new ProductMongoRepository(Product);
+    repoBucket.artistRepository = new ArtistMongoRepository(Artist);
   }
   return () => repoBucket;
 }
