@@ -7,11 +7,13 @@ describe(' 🎯 ProductService ➡ ⛳️ createProduct', () => {
   let productService;
   let productRepository;
   let artistRepository;
+  let fakeProductInputData;
 
   beforeEach(() => {
     productRepository = new ProductMongoRepository();
     artistRepository = new ArtistMongoRepository();
     productService = new ProductService(productRepository, artistRepository);
+    fakeProductInputData = fakeProductRepo.productInputData;
   });
 
   it('raiseCountOfWorks()의 인자로 artistId가 전달되어야 한다', async () => {
@@ -24,12 +26,10 @@ describe(' 🎯 ProductService ➡ ⛳️ createProduct', () => {
     productRepository.create = jest.fn();
 
     // when
-    await productService.createProduct(fakeProductRepo.productInputData);
+    await productService.createProduct(fakeProductInputData);
 
     // then
-    expect(fakeRaiseCountOfWorks).toBeCalledWith(
-      fakeProductRepo.productInputData.artist,
-    );
+    expect(fakeRaiseCountOfWorks).toBeCalledWith(fakeProductInputData.artist);
   });
 
   it('create()의 인자로 procductEntity 객체가 전달되어야 한다', async () => {
@@ -39,10 +39,10 @@ describe(' 🎯 ProductService ➡ ⛳️ createProduct', () => {
     fakeCreate.mockImplementation(() => fakeProductRepo.singleProduct);
 
     // when
-    await productService.createProduct(fakeProductRepo.productInputData);
+    await productService.createProduct(fakeProductInputData);
 
     // then
-    expect(fakeCreate).toBeCalledWith(fakeProductRepo.productInputData);
+    expect(fakeCreate).toBeCalledWith(fakeProductInputData);
   });
 
   it('작가의 작품 수 카운트를 하나 올리고, 새로운 상품을 생성한다', async () => {
@@ -52,9 +52,7 @@ describe(' 🎯 ProductService ➡ ⛳️ createProduct', () => {
     fakeCreate.mockImplementation(() => fakeProductRepo.singleProduct);
 
     // when
-    const newProduct = await productService.createProduct(
-      fakeProductRepo.productInputData,
-    );
+    const newProduct = await productService.createProduct(fakeProductInputData);
 
     // then
     expect(newProduct).toHaveProperty('_id');

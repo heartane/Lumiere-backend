@@ -15,6 +15,7 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
   });
   const page = 1;
   const pageSize = 10;
+  const fakeServeralProducts = fakeProductRepo.severalProducts;
   let isAdmin;
 
   describe('🚧 for Admin Page', () => {
@@ -25,7 +26,7 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
     it('해당 페이지 범위의 상품 정보 리스트와 페이지네이션 정보(현재 페이지, 총 페이지)를 반환한다', async () => {
       // given
       productRepository.findProductsForAdmin = jest.fn(
-        () => fakeProductRepo.severalProducts,
+        () => fakeServeralProducts,
       );
       productRepository.countDocsForAdmin = jest.fn(() => 5);
 
@@ -57,7 +58,7 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
       // given
       productRepository.countDocsForAdmin = jest.fn();
       productRepository.findProductsForAdmin = jest.fn(() => {
-        return fakeProductRepo.severalProducts;
+        return fakeServeralProducts;
       });
       const products = productRepository.findProductsForAdmin();
       // when
@@ -87,7 +88,7 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
 
       productRepository.countDocsForUser = jest.fn();
       productRepository.findProductsForUser = jest.fn(
-        () => fakeProductRepo.severalProducts,
+        () => fakeServeralProducts,
       );
 
       // when
@@ -110,7 +111,7 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
 
       productRepository.countDocsForUser = jest.fn();
       productRepository.findProductsForUser = jest.fn(
-        () => fakeProductRepo.severalProducts,
+        () => fakeServeralProducts,
       );
 
       // when
@@ -132,7 +133,7 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
 
       productRepository.countDocsForUser = jest.fn();
       productRepository.findProductsForUser = jest.fn(
-        () => fakeProductRepo.severalProducts,
+        () => fakeServeralProducts,
       );
 
       // when
