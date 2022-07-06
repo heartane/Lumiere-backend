@@ -112,7 +112,40 @@ export default class ProductService {
     return null;
   }
 
-  //-------------
+  async getLatestProducts() {
+    return await this.#productRepository.getLatest();
+  }
+
+  async getCartItems(productIdArray) {
+    return await this.#productRepository.findItemsForCheck(productIdArray);
+  }
+
+  async getTotalPrice(productIdArray) {
+    const result = await this.#productRepository.sumToPay(productIdArray);
+    const { totalPrice } = result[0];
+    return { totalPrice: (totalPrice + 10000) / 1000 };
+  }
+
+  async zzimProduct(productId, userId, option) {
+    try {
+      let result;
+      if (option) {
+        await this.#productRepository.applyZzim(productId, userId);
+        result = '해당 상품 찜 완료';
+      } else {
+        await this.#productRepository.cancelZzim(productId, userId);
+        result = '해당 상품 찜 해제';
+      }
+      return result;
+    } catch (e) {
+      Logger.error(e.stack);
+    }
+    return null;
+  }
+
+  async getZzimProducts(userId) {
+    return await this.#productRepository.getZzimList(userId);
+  }
 }
 
 const productRepositoryInstance = serviceLocator().productRepository;
