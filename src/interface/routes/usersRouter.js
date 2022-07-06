@@ -11,12 +11,21 @@ export default function usersRouter(userController) {
     .post(validate.register, userController.register)
     .get(protect, admin, userController.getUsers);
 
-  router.route('/email').post(validate.email, userController.checkEmail);
+  router
+    .route('/email') //
+    .post(validate.email, userController.checkEmail);
+
   router
     .route('/login')
     .post(validate.credentials, userController.generalLogin);
-  router.route('/logout').get(protect, userController.logout);
-  router.route('/:corp').get(validate.code, userController.oAuthLogin);
+
+  router
+    .route('/logout') //
+    .get(protect, userController.logout);
+
+  router
+    .route('/:corp') //
+    .get(validate.code, userController.oAuthLogin);
 
   router
     .route('/profile')

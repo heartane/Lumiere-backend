@@ -1,10 +1,10 @@
 import env from './env.js';
-import User from '../database/mongoose/models/user.js';
-import { UserMongoRepository } from '../repositories/UserMongoRepository.js';
 import { SUPPORTED_DATABASE } from './constants.js';
-import { ProductMongoRepository } from '../repositories/ProductMongoRepository.js';
+import User from '../database/mongoose/models/user.js';
 import Product from '../database/mongoose/models/product.js';
 import Artist from '../database/mongoose/models/artist.js';
+import UserMongoRepository from '../repositories/UserMongoRepository.js';
+import ProductMongoRepository from '../repositories/ProductMongoRepository.js';
 import ArtistMongoRepository from '../repositories/ArtistMongoRepository.js';
 
 /* 
