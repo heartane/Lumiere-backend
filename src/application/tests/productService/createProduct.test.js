@@ -1,7 +1,7 @@
 import ProductService from '../../productService';
 import * as fakeProductRepo from '../fixtures/fakeProductRepository';
 import ArtistMongoRepository from '../../../infrastructure/repositories/ArtistMongoRepository';
-import { ProductMongoRepository } from '../../../infrastructure/repositories/ProductMongoRepository';
+import ProductMongoRepository from '../../../infrastructure/repositories/ProductMongoRepository';
 
 describe(' 🎯 ProductService ➡ ⛳️ createProduct', () => {
   let productService;

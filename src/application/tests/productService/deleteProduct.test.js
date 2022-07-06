@@ -1,5 +1,5 @@
 import ArtistMongoRepository from '../../../infrastructure/repositories/ArtistMongoRepository';
-import { ProductMongoRepository } from '../../../infrastructure/repositories/ProductMongoRepository';
+import ProductMongoRepository from '../../../infrastructure/repositories/ProductMongoRepository';
 import ProductService from '../../productService';
 import * as fakeProductRepo from '../fixtures/fakeProductRepository';
 
