@@ -1,5 +1,5 @@
 /* eslint-disable no-return-await */
-import Logger from '../infrastructure/setup/logger.js';
+import Logger from '../infrastructure/express-server/logger.js';
 import serviceLocator from '../infrastructure/config/serviceLocator.js';
 import { serializePagination } from '../interface/helper/serializer.js';
 

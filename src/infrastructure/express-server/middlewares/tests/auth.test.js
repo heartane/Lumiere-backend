@@ -1,10 +1,7 @@
 import httpMocks from 'node-mocks-http';
 import { faker } from '@faker-js/faker';
-import {
-  admin,
-  protect,
-} from '../../../src/infrastructure/setup/middlewares/auth';
-import jwtManager from '../../../src/infrastructure/setup/security/jwtTokenManager';
+import { admin, protect } from '../auth';
+import jwtManager from '../../security/jwtTokenManager';
 
 describe('🎯 Auth Middleware', () => {
   let res;

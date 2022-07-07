@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import env from '../../../config/env.js';
-import Logger from '../../../setup/logger.js';
+import Logger from '../../../express-server/logger.js';
 
 const userSchema = mongoose.Schema(
   {

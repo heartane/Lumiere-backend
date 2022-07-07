@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 import localTime from '../../utils/localTime.js';
 import UserRepository from '../../domain/repositories/UserRepository.js';
-import Logger from '../setup/logger.js';
+import Logger from '../express-server/logger.js';
 
 export default class UserMongoRepository extends UserRepository {
   constructor(User) {

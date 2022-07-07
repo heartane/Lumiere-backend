@@ -7,7 +7,7 @@ import {
 import config from '../infrastructure/config/env.js';
 import makeClassForTokenRequest from '../interface/oauth/oAuth.js';
 import { HTTP_STATUS } from '../infrastructure/config/constants.js';
-import Logger from '../infrastructure/setup/logger.js';
+import Logger from '../infrastructure/express-server/logger.js';
 import localTime from '../utils/localTime.js';
 
 class UserService {

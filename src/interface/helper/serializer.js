@@ -1,4 +1,4 @@
-import jwtManager from '../../infrastructure/setup/security/jwtTokenManager.js';
+import jwtManager from '../../infrastructure/express-server/security/jwtTokenManager.js';
 
 /* 
 DTO
