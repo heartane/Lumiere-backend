@@ -1,5 +1,5 @@
 import { body, query, param } from 'express-validator';
-import validator from '../../infrastructure/setup/middlewares/validator.js';
+import validator from '../../infrastructure/express-server/middlewares/validator.js';
 
 // user
 export const email = [
@@ -59,16 +59,6 @@ const createArtistInput = [
     .exists()
     .isLength({ min: 4 })
     .isNumeric(),
-  validator,
-];
-
-export const productId = [
-  param('id', 'Product objectId required')
-    .trim()
-    .exists()
-    .notEmpty()
-    .isAlphanumeric(),
-  validator,
 ];
 
 const productInput = [
@@ -79,10 +69,20 @@ const productInput = [
     .isString()
     .bail()
     .isIn(['인물', '풍경', '정물', '동물', '상상', '추상']),
-  body('title', 'product title required').trim().exists().notEmpty().escape(),
-  body('image', 'impage url required').trim().exists().isURL(),
-
-  body('price', 'price invalid').trim().exists().notEmpty().isNumeric(),
+  body('title', 'product title required') //
+    .trim()
+    .exists()
+    .notEmpty()
+    .escape(),
+  body('image', 'impage url required') //
+    .trim()
+    .exists()
+    .isURL(),
+  body('price', 'price invalid') //
+    .trim()
+    .exists()
+    .notEmpty()
+    .isNumeric(),
   body('info.details', 'Product info details requird')
     .trim()
     .exists()
@@ -90,7 +90,10 @@ const productInput = [
     .bail()
     .escape()
     .isString(),
-  body('info.size', 'canvas size required').trim().exists().isAlphanumeric(),
+  body('info.size', 'canvas size required') //
+    .trim()
+    .exists()
+    .isAlphanumeric(),
   body('info.canvas', 'canvas range must be 1 - 100 ')
     .trim()
     .exists()
@@ -99,11 +102,7 @@ const productInput = [
     .trim()
     .exists()
     .isLength({ min: 4, max: 4 }),
-
-  validator,
 ];
-
-export const updateProductInput = [...productId, ...productId];
 
 export const createProductInput = [
   ...createArtistInput,
@@ -111,8 +110,32 @@ export const createProductInput = [
   validator,
 ];
 
+export const updateProductInput = [
+  ...productIdForLocation('param'),
+  ...productInput,
+  validator,
+];
+
+export function productIdForLocation(location) {
+  let result;
+  switch (location) {
+    case 'param':
+      result = param('id', 'Product objectId required');
+      break;
+    case 'body':
+      result = body('productId', 'Product objectId required');
+      break;
+    default:
+      result = null;
+  }
+  return [result.trim().exists().notEmpty().isAlphanumeric(), validator];
+}
+
 export const getProductsInput = [
-  query('isAdmin', 'isAdmin required').trim().exists().isIn(['true', '']),
+  query('isAdmin', 'isAdmin required') //
+    .trim()
+    .exists()
+    .isIn(['true', '']),
   query('keyword')
     .trim()
     .optional({ checkFalsy: true })
@@ -144,4 +167,12 @@ export const getProductsInput = [
     .isNumeric()
     .isInt({ min: 100000 }),
   validator,
+];
+
+export const zzimInput = [
+  ...productIdForLocation('body'),
+  body('zzim', 'zzim, true or false?') //
+    .exists()
+    .notEmpty()
+    .isBoolean(),
 ];
