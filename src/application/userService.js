@@ -3,7 +3,7 @@ import serviceLocator from '../infrastructure/config/serviceLocator.js';
 import {
   serializePagination,
   serializeSingleUserInfo,
-} from '../interface/serializers/UserSerializer.js';
+} from '../interface/helper/serializer.js';
 import config from '../infrastructure/config/env.js';
 import makeClassForTokenRequest from '../interface/oauth/oAuth.js';
 import { HTTP_STATUS } from '../infrastructure/config/constants.js';

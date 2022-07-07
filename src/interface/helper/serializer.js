@@ -17,6 +17,7 @@ export function serializeSingleUserInfo(user) {
 
 export function serializePagination(data, page, count, pageSize) {
   const key = Object.keys(data)[0];
+
   /* 
   주던 응답 형태를 변경하지 않기 위해,
   다음부터는 꼭 응답을 정형화하자.
@@ -27,6 +28,6 @@ export function serializePagination(data, page, count, pageSize) {
   return {
     [key]: data[key],
     page,
-    pages: Math.ceil(count / pageSize),
+    pages: Math.ceil(count / pageSize) || 1,
   };
 }

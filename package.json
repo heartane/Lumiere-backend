@@ -8,7 +8,7 @@
     "start": "node src/index.js",
     "server": "nodemon src/index.js",
     "test": "./node_modules/.bin/jest --verbose",
-    "test:watch": "jest --watchAll --verbose",
+    "test:watch": "jest --watchAll --verbose --runInBand",
     "test:ci": "jest --verbose --runInBand --detectOpenHandles --forceExit",
     "test:cover": "jest --coverage",
     "lint": "./node_modules/.bin/eslint ."

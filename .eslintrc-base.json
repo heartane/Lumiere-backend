@@ -20,6 +20,8 @@
     "no-shadow": 0,
     "no-console": "off",
     "no-return-await": "error",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-import-assign": "off",
+    "class-methods-use-this": "off"
   }
 }

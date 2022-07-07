@@ -12,12 +12,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        id: node-cache
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+      - if: steps.node-cache.outputs.cache-hit == 'true'
+        run: echo 'node cache hit!'
       - name: Install dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci
       - run: npm run build --if-present
       - name: Eslint
