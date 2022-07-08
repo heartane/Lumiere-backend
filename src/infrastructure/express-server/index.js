@@ -3,13 +3,13 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import env from '../config/env.js';
-import Logger from './logger.js';
 
 import apiRouter from '../../interface/routes/index.js';
 import { errHandler, notFound } from './middlewares/error.js';
 
-export default () => {
+export default (serviceLocator) => {
   const app = express();
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(helmet());
@@ -19,19 +19,19 @@ export default () => {
     }),
   );
   const morganFormat = env.server.env !== 'production' ? 'dev' : 'combined';
-  app.use(morgan(morganFormat, { stream: Logger.stream }));
+  app.use(morgan(morganFormat, { stream: serviceLocator.logger.stream }));
 
   app.get('/', (req, res) => {
     res.send('Lumiere API is running...');
   });
 
-  app.use(`${env.apiRoot}`, apiRouter);
+  app.use(`${env.apiRoot}`, apiRouter(serviceLocator));
 
   app.use(notFound);
   app.use(errHandler);
 
   app.listen(env.server.port, () =>
-    Logger.info(
+    serviceLocator.logger.info(
       `Server running in ${env.server.env} mode on port ${env.server.port}`,
     ),
   );
