@@ -2,6 +2,7 @@
 import asyncHandler from 'express-async-handler';
 import isAuthorized from '../../utils/isAuthorized.js';
 import { HTTP_STATUS } from '../../infrastructure/config/constants.js';
+import { serializePagination } from '../helper/serializer.js';
 
 export default class ProductController {
   #productService;
@@ -39,7 +40,11 @@ export default class ProductController {
     } else {
       data = await this.#productService.getProducts(page, false, searchQuery);
     }
-    return res.status(HTTP_STATUS.OK).json(data);
+
+    const { products, count, pageSize } = data;
+    return res
+      .status(HTTP_STATUS.OK)
+      .json(serializePagination({ products }, page, count, pageSize));
   });
 
   // @desc    Update a product
@@ -76,10 +81,9 @@ export default class ProductController {
     const data = await this.#productService.getProductById(req.params.id);
 
     if (!data) {
-      res.status(HTTP_STATUS.NOT_FOUND).json('ProductId not exist');
-    } else {
-      res.status(HTTP_STATUS.OK).json(data);
+      return res.status(HTTP_STATUS.NOT_FOUND).json('ProductId not exist');
     }
+    return res.status(HTTP_STATUS.OK).json(data);
   });
 
   // @desc   Fetch latest products
@@ -88,9 +92,10 @@ export default class ProductController {
   getLatestProducts = asyncHandler(async (req, res) => {
     const data = await this.#productService.getLatestProducts();
 
-    if (!data.length)
-      res.status(HTTP_STATUS.NOT_FOUND).json('Products not exist');
-    else res.status(HTTP_STATUS.OK).json(data);
+    if (!data.length) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json('Products not exist');
+    }
+    return res.status(HTTP_STATUS.OK).json(data);
   });
 
   // @desc   Check stock of cartItems
@@ -104,7 +109,7 @@ export default class ProductController {
       ? await this.#productService.getCartItems(productIdArray)
       : [];
 
-    return res.status(HTTP_STATUS.OK).json(data);
+    res.status(HTTP_STATUS.OK).json(data);
   });
 
   // @desc   Fetch cartItems totalprice
@@ -125,12 +130,16 @@ export default class ProductController {
   zzimProduct = asyncHandler(async (req, res) => {
     const { productId, zzim } = req.body;
 
-    const message = await this.#productService.zzimProduct(
+    const data = await this.#productService.zzimProduct(
       productId,
       req.user.id,
       zzim,
     );
-    res.status(HTTP_STATUS.OK).json(message);
+
+    if (data && zzim) {
+      return res.status(HTTP_STATUS.OK).json('해당 상품 찜 완료');
+    }
+    return res.status(HTTP_STATUS.OK).json('해당 상품 찜 해제');
   });
 
   // @desc   Fetch products in zzimlist

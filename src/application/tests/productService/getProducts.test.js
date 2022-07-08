@@ -2,6 +2,7 @@ import ProductService from '../../productService';
 import * as fakeProductRepo from '../fixtures/fakeProductRepository';
 import ArtistMongoRepository from '../../../infrastructure/repositories/ArtistMongoRepository';
 import ProductMongoRepository from '../../../infrastructure/repositories/ProductMongoRepository';
+import Logger from '../../../infrastructure/express-server/logger';
 
 describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
   let productService;
@@ -11,7 +12,11 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
   beforeEach(() => {
     productRepository = new ProductMongoRepository();
     artistRepository = new ArtistMongoRepository();
-    productService = new ProductService(productRepository, artistRepository);
+    productService = new ProductService(
+      productRepository,
+      artistRepository,
+      Logger,
+    );
   });
   const page = 1;
   const pageSize = 10;
@@ -36,8 +41,8 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
       // then
       expect(data).toMatchObject({
         products: productRepository.findProductsForAdmin(),
-        page,
-        pages: Math.ceil(5 / pageSize),
+        count: productRepository.countDocsForAdmin(),
+        pageSize,
       });
     });
 
@@ -168,8 +173,6 @@ describe('🎯 ProductService ➡ ⛳️ getProducts', () => {
       expect(filterField).not.toEqual({});
       expect(keyword).not.toBeUndefined();
       expect(data.products.length).toBe(0);
-      expect(data.page).toBe(1);
-      expect(data.pages).toBe(1);
     });
   });
 });
