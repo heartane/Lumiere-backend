@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/heartane/Lumiere-backend/wiki"><strong>Documentation</strong></a> ·
   <a href="https://www.notion.so/Minimanimo-0bd73eaa9a904b5bb554b876603bab0b"><strong>Team Portfolio</strong></a> ·
-  <a href="https://github.com/heartane/Lumiere-backend/files/9038245/진가람_백엔드.pdf"><strong>My Resume</strong></a>
+  <a href="https://github.com/heartane/Lumiere-backend/files/9038245/_.pdf"><strong>My Resume</strong></a>
 </p>
 <br/>
 
@@ -61,6 +61,36 @@ OOP, 아키텍처 등 모든 좋은 코드를 위한 패러다임에서 중요�
 또 프로젝트의 전반적인 내용을 한눈에 파악할 수 있는 하나의 직관적인 문서로써 테스트 코드를 점차 작성하고 있습니다. <br/>
 
 ### Backend anatomy
+```
+backend 
+ └ src                              → 어플리케이션 소스 파일
+    └ application                   → 어플리케이션의 비즈니스 로직 위치
+       └ tests                      → 서비스 유닛 테스트
+    └ domain                        → 순수 어플리케이션 코어 데이터 & 레포지토리
+    └ infrastructure                → 프레임워크와 외부 모듈들
+       └ config                     → 어플리케이션 환경 설정 폴더
+          └ service-locator.js      → 환경에 따른 모듈 인스턴스 생성 파일
+       └ database                   → 데이터베이스 ORM & ODM (Mongoose for MongoDB)
+          └ mongoose                → 몽구스 연결 및 모델 스키마
+       └ repositories               → 도메인 레포지토리의 구현체
+       └ security                   → Security tools (ex: JwtTokenManager)
+       └ express-server             → Express 웹 서버 설정
+          └ index.js                → Express 서버 생성
+          └ logger.js               → logger file 설정
+          └ middlewares             → Express 미들웨어 (auth, error, validator..)
+             └ tests                → 미들웨어 유닛 테스트
+       └ index.js                   → Express 서버와 DB 호출
+    └ interfaces                    → 외부와 내부를 연결하는 어댑터
+       └ controllers                → Express 라우트 핸들러
+       └ routes                     → Express 라우트 
+       └ oauth                      → 소설 로그인 클래스 OAuth2.0 ( naver, google, kakao )
+       └ helper                     → format helper
+          └ validate.js             → 요청 데이터의 유효성 검사
+          └ serializer.js           → 비즈니스 로직의 객체를 특정 응답 형태로 변환하여 전달
+ └ main.js                          → 어플리케이션 엔트리 포인트
+ └ tests                            → 통합 테스트 
+ └ node_modules                     → NPM dependencies
+```
 
 ### Flow of Control
 
