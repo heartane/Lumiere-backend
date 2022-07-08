@@ -5,16 +5,38 @@ import eventRoutes from './eventRoutes.js';
 import usersRouter from './usersRouter.js';
 import productsRouter from './productsRouter.js';
 import UserController from '../controllers/userController.js';
-import userService from '../../application/userService.js';
+import UserService from '../../application/userService.js';
 import ProductController from '../controllers/productController.js';
-import { productService } from '../../application/productService.js';
+import ProductService from '../../application/productService.js';
 
 const router = new Router();
 
-router.use('/users', usersRouter(new UserController(userService)));
-router.use('/products', productsRouter(new ProductController(productService)));
-router.use('/artists', artistRoutes);
-router.use('/orders', orderRoutes);
-router.use('/events', eventRoutes);
+export default function apiRouter(serviceLocator) {
+  const { logger } = serviceLocator;
 
-export default router;
+  router.use(
+    '/users',
+    usersRouter(
+      new UserController(
+        new UserService(serviceLocator.userRepository, logger),
+      ),
+    ),
+  );
+  router.use(
+    '/products',
+    productsRouter(
+      new ProductController(
+        new ProductService(
+          serviceLocator.productRepository,
+          serviceLocator.artistRepository,
+          logger,
+        ),
+      ),
+    ),
+  );
+  router.use('/artists', artistRoutes);
+  router.use('/orders', orderRoutes);
+  router.use('/events', eventRoutes);
+
+  return router;
+}

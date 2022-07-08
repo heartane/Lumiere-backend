@@ -5,7 +5,10 @@ import {
   updateEvent,
   deleteEvent,
 } from '../controllers/eventController.js';
-import { protect, admin } from '../../infrastructure/setup/middlewares/auth.js';
+import {
+  protect,
+  admin,
+} from '../../infrastructure/express-server/middlewares/auth.js';
 
 const router = express.Router();
 

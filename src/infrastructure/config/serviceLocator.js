@@ -6,6 +6,7 @@ import Artist from '../database/mongoose/models/artist.js';
 import UserMongoRepository from '../repositories/UserMongoRepository.js';
 import ProductMongoRepository from '../repositories/ProductMongoRepository.js';
 import ArtistMongoRepository from '../repositories/ArtistMongoRepository.js';
+import Logger from '../express-server/logger.js';
 
 /* 
 데이터베이스를 상황에 따라 탈부착을 할 수 있게 하고,
@@ -14,15 +15,16 @@ import ArtistMongoRepository from '../repositories/ArtistMongoRepository.js';
 서버 실행 시 최초 한번만 주입되고 그 인스턴스를 계속 사용하여야 함.
 그럼 클로저 형태로 인스턴스를 생성한 것을 유지할 수 있지 않을까?
 */
-
-function injectDatabase() {
-  const repoBucket = {};
+function injectDependencies() {
+  const repoBucket = {
+    logger: Logger,
+  };
   if (env.database.adaptor === SUPPORTED_DATABASE.MONGO) {
     repoBucket.userRepository = new UserMongoRepository(User);
     repoBucket.productRepository = new ProductMongoRepository(Product);
     repoBucket.artistRepository = new ArtistMongoRepository(Artist);
   }
-  return () => repoBucket;
+  return Object.freeze(repoBucket);
 }
 
-export default injectDatabase();
+export default injectDependencies();

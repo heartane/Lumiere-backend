@@ -19,7 +19,7 @@
     "import/no-extraneous-dependencies": 0,
     "no-shadow": 0,
     "no-console": "off",
-    "no-return-await": "error",
+    "no-return-await": "off",
     "no-underscore-dangle": "off",
     "no-import-assign": "off",
     "class-methods-use-this": "off"

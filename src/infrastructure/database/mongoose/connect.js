@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import config from '../../config/env.js';
-import Logger from '../../setup/logger.js';
+import Logger from '../../express-server/logger.js';
 
 const connectDB = async () => {
   try {

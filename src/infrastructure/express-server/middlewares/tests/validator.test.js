@@ -1,13 +1,9 @@
 import httpMocks from 'node-mocks-http';
 import { faker } from '@faker-js/faker';
 import * as validator from 'express-validator';
-import validate from '../../../src/infrastructure/setup/middlewares/validator';
+import validate from '../validator';
 
 jest.mock('express-validator');
-
-function readOnly(obj) {
-  return obj;
-}
 
 describe('🎯 Validator Middleware', () => {
   it('유효하지 않은 데이터라면 400 코드와 함께 에러메세지를 반환합니다', () => {
@@ -16,7 +12,7 @@ describe('🎯 Validator Middleware', () => {
     const next = jest.fn();
     const errMsg = faker.random.words(5);
 
-    readOnly(validator).validationResult = jest.fn(() => ({
+    validator.validationResult = jest.fn(() => ({
       isEmpty: () => false,
       array: () => [{ msg: errMsg }],
     }));
@@ -32,7 +28,7 @@ describe('🎯 Validator Middleware', () => {
     const res = httpMocks.createResponse();
     const next = jest.fn();
 
-    readOnly(validator).validationResult = jest.fn(() => ({
+    validator.validationResult = jest.fn(() => ({
       isEmpty: () => true,
     }));
     validate(req, res, next);
