@@ -1,94 +1,50 @@
 /* eslint-disable camelcase */
-import serviceLocator from '../infrastructure/config/serviceLocator.js';
-import {
-  serializePagination,
-  serializeSingleUserInfo,
-} from '../interface/helper/serializer.js';
-import config from '../infrastructure/config/env.js';
-import makeClassForTokenRequest from '../interface/oauth/oAuth.js';
-import { HTTP_STATUS } from '../infrastructure/config/constants.js';
-import Logger from '../infrastructure/express-server/logger.js';
-import localTime from '../utils/localTime.js';
+export default class UserService {
+  #userRepository;
 
-class UserService {
-  constructor(userRepository) {
-    this.userRepository = userRepository;
+  constructor(userRepository, logger) {
+    this.#userRepository = userRepository;
+    this.logger = logger;
   }
 
   async checkEmail(email) {
-    const userExists = await this.userRepository.findByEmail(email);
-
-    if (userExists) {
-      return {
-        status: HTTP_STATUS.UNAUTHORIZED,
-        message: '해당 이메일이 존재합니다',
-      };
-    }
-    return { status: HTTP_STATUS.OK, message: '사용 가능한 이메일입니다' };
+    return await this.#userRepository.findByEmail(email);
   }
 
   async register(userInfo) {
-    let user;
-
     try {
-      user = await this.userRepository.create(userInfo);
+      const user = await this.#userRepository.create(userInfo);
+      return user._id;
     } catch (e) {
-      Logger.error(e.stack);
-      return { status: HTTP_STATUS.INTERNAL_ERROR, message: '유저 생성 오류' };
+      this.logger.error(e.stack);
     }
-    return {
-      status: HTTP_STATUS.CREATE,
-      message: `회원가입 완료, ${user._id}`,
-    };
+    return null;
   }
 
   async generalLogin(email, password) {
-    const user = await this.userRepository.findByEmail(email);
-
-    const statusCode = {
-      status: HTTP_STATUS.UNAUTHORIZED,
-    };
-
-    if (!user) {
-      return {
-        ...statusCode,
-        message: '이메일을 다시 확인해주세요',
-      };
+    try {
+      const user = await this.#userRepository.findByEmail(email);
+      if (!user || user.isClosed) return null;
+      if (await user.matchPassword(password)) return user;
+    } catch (e) {
+      this.logger.error(e.stack);
     }
-    if (user.isClosed) {
-      return {
-        ...statusCode,
-        message: '탈퇴한 회원입니다',
-      };
-    }
-    if (await user.matchPassword(password)) {
-      return { status: HTTP_STATUS.OK, data: serializeSingleUserInfo(user) };
-    }
-    return { ...statusCode, message: '비밀번호를 다시 확인해주세요' };
+    return null;
   }
 
   async logout(userId) {
-    let lastAccessTime;
     try {
-      ({ lastAccessTime } = await this.userRepository.findByIdAndUpdate(
-        userId,
-        {
-          lastAccessTime: localTime(),
-        },
-      ));
+      const user = await this.#userRepository.logLastAccessTime(userId);
+      return user.lastAccessTime;
     } catch (e) {
-      Logger.error(e.stack);
+      this.logger.error(e.stack);
     }
-    return {
-      status: HTTP_STATUS.OK,
-      message: `로그아웃 시간, ${lastAccessTime}`,
-    };
+    return null;
   }
 
-  async socialLogin(corp, code) {
-    let user;
+  async socialLogin(corp, code, oAuthFactory) {
     try {
-      const corpOptions = makeClassForTokenRequest(corp, code);
+      const corpOptions = oAuthFactory(corp, code, this.logger);
       const token = await corpOptions.getAccessToken();
 
       const { uuid, email, name } = await corpOptions.setUserInfo(token);
@@ -102,87 +58,62 @@ class UserService {
         refresh_token,
       };
 
-      user = await this.userRepository.findSocialUser(userInfo);
+      const user = await this.#userRepository.findSocialUser(userInfo);
 
-      if (user) {
-        return { status: HTTP_STATUS.OK, data: serializeSingleUserInfo(user) };
-      }
-      user = await this.userRepository.create(userInfo);
+      return user || (await this.#userRepository.create(userInfo));
     } catch (e) {
-      Logger.error(e.stack);
+      this.logger.error(e.stack);
     }
-    return {
-      status: HTTP_STATUS.CREATE,
-      data: serializeSingleUserInfo(user),
-    };
+    return null;
   }
 
   async checkPassword(userId, password) {
-    const user = await this.userRepository.findById(userId);
+    const user = await this.#userRepository.findById(userId);
 
-    if (user.isSocial) {
-      return {
-        status: HTTP_STATUS.FORBIDDEN,
-        message: '소셜 유저는 변경이 불가합니다',
-      };
-    }
-    if (await user.matchPassword(password)) {
-      return { status: HTTP_STATUS.OK, message: '비밀번호 일치' };
-    }
-    return { status: HTTP_STATUS.UNAUTHORIZED, message: '비밀번호 불일치' };
+    return user.isSocial ? null : await user.matchPassword(password);
   }
 
   async updatePassword(userId, password) {
-    const updatedUser = await this.userRepository.findByIdAndUpdate(userId, {
-      password,
-    });
-
-    return {
-      status: HTTP_STATUS.OK,
-      data: serializeSingleUserInfo(updatedUser).token,
-    };
+    return await this.#userRepository.updatePassword(userId, password);
   }
 
-  async withdraw(jwtPayload, userId = null) {
+  async withdraw(jwtPayload, oAuthFactory, userId) {
+    // 유저 본인이 탈퇴 요청 / 관리자가 탈퇴 요청
+
     const targetId = jwtPayload.isAdmin ? userId : jwtPayload.id;
 
-    let message = '일반 유저 탈퇴 완료';
     try {
-      const user = await this.userRepository.findById(targetId);
+      const user = await this.#userRepository.findById(targetId);
 
       if (user.isSocial) {
+        // 소셜 유저 연결끊기
         const { organization, refreshToken } = user.socialInfo;
-
-        const corpOptions = makeClassForTokenRequest(
+        const corpOptions = oAuthFactory(
           organization,
           refreshToken,
+          this.logger,
         );
-        message = await corpOptions.revokeAccess();
+        await corpOptions.revokeAccess();
       }
-      await this.userRepository.delete(targetId, user.isSocial);
+      // DB 데이터 정리
+      return await this.#userRepository.deleteCredentials(
+        targetId,
+        user.isSocial,
+      );
     } catch (e) {
-      Logger.error(e.stack);
+      this.logger.error(e.stack);
     }
-    return {
-      status: HTTP_STATUS.OK,
-      message,
-    };
+    return null;
   }
 
-  async getUsers(page) {
-    const { pageSize } = config.pagination;
-    const filter = { isAdmin: false };
-    const count = await this.userRepository.countDocuments(filter);
-    const users = await this.userRepository.findUsers(pageSize, page, filter);
-
-    return {
-      status: HTTP_STATUS.OK,
-      data: serializePagination({ users }, page, count, pageSize),
-    };
+  async getUsers(page, pageSize) {
+    try {
+      const count = await this.#userRepository.countDocuments();
+      const users = await this.#userRepository.findUsers(pageSize, page);
+      return { users, count };
+    } catch (e) {
+      this.logger.error(e.stack);
+    }
+    return null;
   }
 }
-
-const userRepositoryInstance = serviceLocator().userRepository;
-const userService = new UserService(userRepositoryInstance);
-
-export default userService;

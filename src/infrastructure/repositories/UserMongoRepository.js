@@ -48,11 +48,22 @@ export default class UserMongoRepository extends UserRepository {
     return user;
   }
 
-  async findByIdAndUpdate(userId, updateQuery, queryOptions = { new: true }) {
-    const user = await this.user
-      .findByIdAndUpdate(userId, updateQuery, queryOptions)
+  async updatePassword(userId, password) {
+    return await this.user
+      .findByIdAndUpdate(
+        userId,
+        {
+          password,
+        },
+        { new: true },
+      )
       .lean();
-    return user;
+  }
+
+  async logLastAccessTime(userId) {
+    return await this.user
+      .findByIdAndUpdate(userId, { lastAccessTime: localTime() }, { new: true })
+      .lean();
   }
 
   async findSocialUser(userInfo) {
@@ -72,7 +83,7 @@ export default class UserMongoRepository extends UserRepository {
       .lean();
   }
 
-  async delete(userId, isSocial) {
+  async deleteCredentials(userId, isSocial) {
     const query = isSocial
       ? {
           'socialInfo.refreshToken': 1,
@@ -90,14 +101,14 @@ export default class UserMongoRepository extends UserRepository {
     );
   }
 
-  async countDocuments(filter) {
-    return await this.user.countDocuments({ ...filter }).lean();
+  async countDocuments() {
+    return await this.user.countDocuments({}).lean();
   }
 
-  async findUsers(pageSize, page, filter) {
+  async findUsers(pageSize, page) {
     return await this.user
       .find(
-        { ...filter },
+        {},
         {
           isAdmin: 0,
           password: 0,
