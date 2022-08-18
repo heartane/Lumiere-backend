@@ -12,8 +12,8 @@
 <p align="center">
   <a href="https://github.com/heartane/Lumiere-backend/wiki"><strong>Documentation</strong></a> ·
   <a href="https://www.notion.so/Minimanimo-0bd73eaa9a904b5bb554b876603bab0b"><strong>Team Portfolio</strong></a> ·
-  <a href="https://github.com/heartane/Lumiere-backend/files/9038245/_.pdf"><strong>My Resume</strong></a>
-</p>
+  <a href="https://github.com/heartane/Lumiere-backend/files/9372496/__Backend_Developer.pdf"><strong>My Resume</strong></a>
+
 <br/>
 
 # 🌟 Lumiere
@@ -36,7 +36,6 @@
     - [ ]  하나의 함수가 너무 많은 역할을 지고 있지는 않는가?
 - [ ]  주요 비즈니스 로직에 대한 테스트 코드를 작성하는가?
 - [ ]  코드의 가독성을 높이기 위한 고민을 했는가?
-    - [ ]  남이 잘 이해할 수 있는 코드인가?
 - [ ]  프레임워크에서 제공하는 기본 아키텍처에 대한 이해를 하고 있는가?
 - [ ]  반복되는 작업들은 자동화하는가?
 - [ ]  프로젝트의 문서화(+README)가 잘 되어 있는가?
