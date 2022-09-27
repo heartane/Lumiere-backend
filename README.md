@@ -1,5 +1,8 @@
 <p align="center">
-  <a href="https://www.lumieregallery.site/">
+  Server was terminated.
+</p>
+<p align="center">
+  <a href="https://github.com/heartane/Lumiere-backend/wiki/Final-App-View">
     <img src="https://user-images.githubusercontent.com/83930702/143972152-84715903-5971-49dc-b782-1a482495b3fc.png" height="96">
     <h3 align="center">Lumiere</h3>
   </a>
@@ -90,8 +93,6 @@ backend
  └ tests                            → 통합 테스트 
  └ node_modules                     → NPM dependencies
 ```
-
-### Flow of Control
 
 
 
