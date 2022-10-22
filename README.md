@@ -15,7 +15,7 @@
 <p align="center">
   <a href="https://github.com/heartane/Lumiere-backend/wiki"><strong>Documentation</strong></a> ·
   <a href="https://www.notion.so/Minimanimo-0bd73eaa9a904b5bb554b876603bab0b"><strong>Team Portfolio</strong></a> ·
-  <a href="https://github.com/heartane/Lumiere-backend/files/9372496/__Backend_Developer.pdf"><strong>My Resume</strong></a>
+  <a href="https://www.notion.so/08b3c9f17d194d4c9932ef5cc7928ead"><strong>My Resume</strong></a>
 
 <br/>
 
