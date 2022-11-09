@@ -1,5 +1,5 @@
 <p align="center">
-  Server was terminated.
+  Server was terminated. Go to  <a href="https://github.com/heartane/Lumiere-backend/wiki/Final-App-View"> final App view </a>.
 </p>
 <p align="center">
   <a href="https://github.com/heartane/Lumiere-backend/wiki/Final-App-View">
